@@ -21,12 +21,16 @@ export async function GET(request: NextRequest) {
 
     // Single product fetch
     if (productId) {
-      const product = await db.query.products.findFirst({
-        where: eq(products.productId, parseInt(productId)),
-        with: { category: true },
-      });
+      const [product] = await db
+        .select()
+        .from(products)
+        .where(eq(products.productId, parseInt(productId)))
+        .limit(1);
       if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-      return NextResponse.json(product);
+      const [category] = product.categoryId
+        ? await db.select().from(categories).where(eq(categories.categoryId, product.categoryId)).limit(1)
+        : [];
+      return NextResponse.json({ ...product, category: category ?? null });
     }
 
     // Build where conditions

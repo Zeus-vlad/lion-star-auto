@@ -1,10 +1,11 @@
-import { pgTable, serial, varchar, text, integer, decimal, boolean, timestamp, index, unique } from 'drizzle-orm/pg-core';
+import { pgSchema, serial, varchar, text, integer, decimal, boolean, timestamp, index, unique } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 
 // Schema prefix for Neon - using lion_star_auto schema
 const SCHEMA = 'lion_star_auto';
+const autoSchema = pgSchema(SCHEMA);
 
-export const categories = pgTable(`${SCHEMA}.categories`, {
+export const categories = autoSchema.table('categories', {
   categoryId: serial('category_id').primaryKey(),
   categoryName: varchar('category_name', { length: 200 }).notNull().unique(),
   description: text('description'),
@@ -15,7 +16,7 @@ export const categories = pgTable(`${SCHEMA}.categories`, {
   index('categories_name_idx').on(table.categoryName),
 ]);
 
-export const states = pgTable(`${SCHEMA}.states`, {
+export const states = autoSchema.table('states', {
   id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull().unique(),
   code: varchar('code', { length: 2 }).notNull().unique(),
@@ -24,7 +25,7 @@ export const states = pgTable(`${SCHEMA}.states`, {
   index('states_name_idx').on(table.name),
 ]);
 
-export const customers = pgTable(`${SCHEMA}.customers`, {
+export const customers = autoSchema.table('customers', {
   customerId: serial('customer_id').primaryKey(),
   firstName: varchar('first_name', { length: 100 }).notNull(),
   lastName: varchar('last_name', { length: 100 }).notNull(),
@@ -43,7 +44,7 @@ export const customers = pgTable(`${SCHEMA}.customers`, {
   index('customers_state_id_idx').on(table.stateId),
 ]);
 
-export const products = pgTable(`${SCHEMA}.products`, {
+export const products = autoSchema.table('products', {
   productId: serial('product_id').primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
   price: decimal('price', { precision: 12, scale: 2 }).notNull(),
@@ -66,7 +67,7 @@ export const products = pgTable(`${SCHEMA}.products`, {
   index('products_price_idx').on(table.price),
 ]);
 
-export const purchases = pgTable(`${SCHEMA}.purchases`, {
+export const purchases = autoSchema.table('purchases', {
   purchaseId: serial('purchase_id').primaryKey(),
   productId: integer('product_id').notNull().references(() => products.productId, { onDelete: 'cascade' }),
   customerId: integer('customer_id').references(() => customers.customerId, { onDelete: 'set null' }),
@@ -79,7 +80,7 @@ export const purchases = pgTable(`${SCHEMA}.purchases`, {
   index('purchases_customer_id_idx').on(table.customerId),
 ]);
 
-export const transactions = pgTable(`${SCHEMA}.transactions`, {
+export const transactions = autoSchema.table('transactions', {
   transactionId: serial('transaction_id').primaryKey(),
   customerId: integer('customer_id').notNull().references(() => customers.customerId, { onDelete: 'cascade' }),
   purchaseId: integer('purchase_id').references(() => purchases.purchaseId, { onDelete: 'set null' }),
@@ -100,7 +101,7 @@ export const transactions = pgTable(`${SCHEMA}.transactions`, {
   index('transactions_date_idx').on(table.dateOfTransaction),
 ]);
 
-export const cartItems = pgTable(`${SCHEMA}.cart_items`, {
+export const cartItems = autoSchema.table('cart_items', {
   cartId: serial('cart_id').primaryKey(),
   customerId: integer('customer_id').notNull().references(() => customers.customerId, { onDelete: 'cascade' }),
   productId: integer('product_id').notNull().references(() => products.productId, { onDelete: 'cascade' }),

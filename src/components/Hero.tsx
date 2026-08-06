@@ -97,8 +97,10 @@ export function Hero() {
               )}
               asChild
             >
-              <a href="#inventory">Explore Inventory</a>
-              <ArrowRight className="w-5 h-5" />
+              <a href="#inventory" className="inline-flex items-center gap-2">
+                Explore Inventory
+                <ArrowRight className="w-5 h-5" />
+              </a>
             </Button>
             <Button
               size="lg"

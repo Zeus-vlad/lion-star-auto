@@ -1,6 +1,6 @@
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
-import { Filters } from '@/components/Filters';
+import { HomeFilters } from '@/components/HomeFilters';
 import { VehicleCard } from '@/components/VehicleCard';
 import { BrandShowcase } from '@/components/BrandShowcase';
 import { Button } from '@/components/ui/button';
@@ -34,7 +34,8 @@ interface Pagination {
 
 async function fetchProducts(params: Record<string, string>) {
   const query = new URLSearchParams(params).toString();
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/products?${query}`, {
+  const base = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const res = await fetch(`${base}/api/products?${query}`, {
     next: { revalidate: 60 },
   });
   if (!res.ok) throw new Error('Failed to fetch products');
@@ -77,14 +78,6 @@ export default async function HomePage({
 
   const hasActiveFilters = category || search || minPrice || maxPrice;
 
-  const buildUrl = (newParams: Record<string, string>) => {
-    const sp = new URLSearchParams();
-    Object.entries({ ...params, ...newParams }).forEach(([k, v]) => {
-      if (v) sp.set(k, v);
-    });
-    return `/?${sp.toString()}`;
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
@@ -108,7 +101,7 @@ export default async function HomePage({
           </div>
 
           {/* Filters */}
-          <Filters
+          <HomeFilters
             categories={categoryList}
             selectedCategory={category}
             priceRange={[
@@ -116,11 +109,8 @@ export default async function HomePage({
               maxPrice ? parseInt(maxPrice) : 200000,
             ]}
             searchQuery={search || ''}
-            onCategoryChange={(cat) => { window.location.href = buildUrl({ category: cat, page: '1' }); }}
-            onPriceRangeChange={() => {}}
-            onSearchChange={(q) => { window.location.href = buildUrl({ search: q, page: '1' }); }}
-            onClearFilters={() => { window.location.href = '/'; }}
             hasActiveFilters={!!hasActiveFilters}
+            params={params}
           />
 
           {/* Products Grid */}
@@ -153,14 +143,14 @@ export default async function HomePage({
 
                 {/* Pagination */}
                 {pagination.totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-4 mt-12 pt-8 border-t  border ">
+                  <div className="flex items-center justify-center gap-4 mt-12 pt-8 border-t border-white/10">
                     {pagination.page > 1 && (
                       <Button
                         variant="outline"
                         size="sm"
                         asChild
                       >
-                        <a href={buildUrl({ page: (pagination.page - 1).toString() })}>
+                        <a href={`/?page=${pagination.page - 1}${category ? `&category=${category}` : ''}${search ? `&search=${search}` : ''}${minPrice ? `&minPrice=${minPrice}` : ''}${maxPrice ? `&maxPrice=${maxPrice}` : ''}`}>
                           <ChevronLeft className="w-4 h-4 mr-1" />
                           Previous
                         </a>
@@ -177,7 +167,7 @@ export default async function HomePage({
                         size="sm"
                         asChild
                       >
-                        <a href={buildUrl({ page: (pagination.page + 1).toString() })}>
+                        <a href={`/?page=${pagination.page + 1}${category ? `&category=${category}` : ''}${search ? `&search=${search}` : ''}${minPrice ? `&minPrice=${minPrice}` : ''}${maxPrice ? `&maxPrice=${maxPrice}` : ''}`}>
                           Next
                           <ChevronRight className="w-4 h-4 ml-1" />
                         </a>

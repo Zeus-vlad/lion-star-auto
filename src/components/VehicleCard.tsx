@@ -104,8 +104,7 @@ export function VehicleCard({
         <CardFooter className="p-4 pt-0">
           <Button
             className="w-full gap-2 bg-primary hover:bg-primary/90"
-            asChild
-            onClick={(e) => e.preventDefault()}
+            type="button"
           >
             View Details
             <ArrowRight className="w-4 h-4" />

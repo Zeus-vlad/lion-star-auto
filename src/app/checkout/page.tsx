@@ -8,8 +8,10 @@ import { ShoppingCart, Check, MapPin, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 
 interface State {
-  stateId: number;
-  stateName: string;
+  id: number;
+  name: string;
+  code: string;
+  taxRate: string;
 }
 
 async function fetchStates(): Promise<State[]> {
@@ -68,7 +70,7 @@ export default async function CheckoutPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {states.map((s) => (
-                          <SelectItem key={s.stateId} value={(s as any).name}>{(s as any).name}</SelectItem>
+                          <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
