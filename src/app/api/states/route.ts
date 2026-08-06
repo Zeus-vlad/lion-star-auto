@@ -5,7 +5,7 @@ import { asc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
-    const allStates = await db.select().from(states).orderBy(asc(states.stateName));
+    const allStates = await db.select().from(states).orderBy(asc((states as any).name));
     return NextResponse.json(allStates);
   } catch (error) {
     console.error('Error fetching states:', error);

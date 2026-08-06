@@ -1,57 +1,51 @@
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { db } from '@/db';
-import { customers } from '@/db/schema';
-import { eq } from 'drizzle-orm';
-import { compare } from 'bcryptjs';
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { db } from "@/db";
+import { customers } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { compare } from "bcryptjs";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const handler = NextAuth({
   providers: [
     CredentialsProvider({
-      name: 'credentials',
+      name: "credentials",
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials: any) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Email and password are required');
+          throw new Error("Email and password are required");
         }
-
-        const user = await db.query.customers.findFirst({
-          where: eq(customers.email, credentials.email as string),
-        });
-
-        if (!user) {
-          throw new Error('Invalid credentials');
+        const user = await db.select().from(customers).where(eq(customers.email, credentials.email as string)).limit(1);
+        if (!user.length) {
+          throw new Error("No user found with this email");
         }
-
-        const isValid = await compare(credentials.password as string, user.passwordHash);
+        const isValid = await compare(credentials.password as string, user[0].passwordHash);
         if (!isValid) {
-          throw new Error('Invalid credentials');
+          throw new Error("Invalid password");
         }
-
         return {
-          id: user.customerId.toString(),
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          isAdmin: user.isAdmin,
+          id: String(user[0].customerId),
+          email: user[0].email,
+          firstName: user[0].firstName,
+          lastName: user[0].lastName,
+          isAdmin: user[0].isAdmin,
         };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.id = user.id;
-        token.firstName = (user as any).firstName;
-        token.lastName = (user as any).lastName;
-        token.isAdmin = (user as any).isAdmin;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
+        token.isAdmin = user.isAdmin;
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (token) {
         session.user = {
           id: token.id as string,
@@ -59,16 +53,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           firstName: token.firstName as string,
           lastName: token.lastName as string,
           isAdmin: token.isAdmin as boolean,
-        } as any;
+        };
       }
       return session;
     },
   },
   pages: {
-    signIn: '/login',
+    signIn: "/login",
   },
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
 });
+
+export { handler as GET, handler as POST };

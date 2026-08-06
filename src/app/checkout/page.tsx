@@ -68,7 +68,7 @@ export default async function CheckoutPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {states.map((s) => (
-                          <SelectItem key={s.stateId} value={s.stateName}>{s.stateName}</SelectItem>
+                          <SelectItem key={s.stateId} value={(s as any).name}>{(s as any).name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

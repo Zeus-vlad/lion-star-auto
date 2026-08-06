@@ -120,7 +120,7 @@ export default async function HomePage({
             onPriceRangeChange={() => {}}
             onSearchChange={(q) => { window.location.href = buildUrl({ search: q, page: '1' }); }}
             onClearFilters={() => { window.location.href = '/'; }}
-            hasActiveFilters={hasActiveFilters}
+            hasActiveFilters={!!hasActiveFilters}
           />
 
           {/* Products Grid */}

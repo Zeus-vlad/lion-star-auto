@@ -81,16 +81,16 @@ export function Header() {
                   aria-haspopup="true"
                 >
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center text-white font-medium">
-                    {session.user?.firstName?.[0]}{session.user?.lastName?.[0]}
+                    {(session.user as any)?.firstName?.[0]}{(session.user as any)?.lastName?.[0]}
                   </div>
-                  <span className="hidden sm:block text-sm font-medium">{session.user?.firstName}</span>
+                  <span className="hidden sm:block text-sm font-medium">{(session.user as any)?.firstName}</span>
                   <ChevronDown className="w-4 h-4" />
                 </button>
 
                 {isUserMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-popover border  rounded-lg shadow-lg py-2 animate-fade-in">
                     <div className="px-4 py-2 border-b  border ">
-                      <p className="text-sm font-medium">{session.user?.firstName} {session.user?.lastName}</p>
+                      <p className="text-sm font-medium">{(session.user as any)?.firstName} {(session.user as any)?.lastName}</p>
                       <p className="text-xs text-muted-foreground">{session.user?.email}</p>
                     </div>
                     <Link
@@ -101,7 +101,7 @@ export function Header() {
                       <User className="w-4 h-4" />
                       <span>Purchase History</span>
                     </Link>
-                    {session.user?.isAdmin && (
+                    {(session.user as any)?.isAdmin && (
                       <Link
                         href="/admin"
                         className="flex items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-accent"
@@ -167,7 +167,7 @@ export function Header() {
                     <Link href="/history" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                       Purchase History
                     </Link>
-                    {session.user?.isAdmin && (
+                    {(session.user as any)?.isAdmin && (
                       <Link href="/admin" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                         Admin Dashboard
                       </Link>
