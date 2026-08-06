@@ -3,36 +3,43 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+const SelectContext = React.createContext<{
+  value: string;
+  onChange?: (value: string) => void;
+}>({ value: "" });
+
 const Select = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
+  Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> & {
     placeholder?: string;
     value?: string;
     onChange?: (value: string) => void;
   }
->(({ className, placeholder, value, onChange, ...props }, ref) => {
+>(({ className, placeholder, value, onChange, children, ...props }, ref) => {
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState(value || "");
+  const selected = value || "";
 
   return (
-    <div
-      ref={ref}
-      className={cn(
-        "relative w-full cursor-text rounded-md border border-input bg-background px-3 py-2 text-sm transition-colors",
-        className
-      )}
-      onClick={() => setOpen(!open)}
-      {...props}
-    >
-      <span className={selected ? "text-foreground" : "text-muted-foreground"}>
-        {selected || placeholder}
-      </span>
-      {open && (
-        <div className="absolute z-10 w-full mt-1 bg-background border border-input rounded-md shadow-lg">
-          {props.children}
-        </div>
-      )}
-    </div>
+    <SelectContext.Provider value={{ value: selected, onChange }}>
+      <div
+        ref={ref}
+        className={cn(
+          "relative w-full cursor-pointer rounded-md border border-input bg-background px-3 py-2 text-sm transition-colors",
+          className
+        )}
+        onClick={() => setOpen(!open)}
+        {...props}
+      >
+        <span className={selected ? "text-foreground" : "text-muted-foreground"}>
+          {selected || placeholder}
+        </span>
+        {open && (
+          <div className="absolute z-10 w-full mt-1 bg-background border border-input rounded-md shadow-lg">
+            {children}
+          </div>
+        )}
+      </div>
+    </SelectContext.Provider>
   );
 });
 Select.displayName = "Select";
@@ -92,19 +99,23 @@ SelectContent.displayName = "SelectContent";
 const SelectItem = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { value?: string }
->(({ className, children, value, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-      className
-    )}
-    data-value={value}
-    {...props}
-  >
-    {children}
-  </div>
-));
+>(({ className, children, value, ...props }, ref) => {
+  const { onChange } = React.useContext(SelectContext);
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        className
+      )}
+      data-value={value}
+      onClick={() => onChange?.(value || "")}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+});
 SelectItem.displayName = "SelectItem";
 
 export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem };

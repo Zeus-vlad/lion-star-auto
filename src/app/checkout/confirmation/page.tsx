@@ -4,8 +4,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
-export default function ConfirmationPage() {
-  const orderNumber = 'LSA-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+export default async function ConfirmationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ id?: string }>;
+}) {
+  const { id } = await searchParams;
+  const orderNumber = id ? `LSA-${id}` : 'LSA-' + Math.random().toString(36).substring(2, 10).toUpperCase();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
