@@ -3,6 +3,8 @@ import { Hero } from '@/components/Hero';
 import { HomeFilters } from '@/components/HomeFilters';
 import { VehicleCard } from '@/components/VehicleCard';
 import { BrandShowcase } from '@/components/BrandShowcase';
+import { ServicesSection } from '@/components/ServicesSection';
+import { TeamSection } from '@/components/TeamSection';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Suspense } from 'react';
@@ -215,11 +217,17 @@ export default async function HomePage({
         </div>
       </section>
 
+      {/* Services Section */}
+      <ServicesSection />
+
+      {/* Team Section */}
+      <TeamSection />
+
       {/* Contact Section */}
       <section id="contact" className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4">Ready to Find Your Dream Car?</h3>
+            <h3 className="text-3xl font-bold mb-4">Ready to Find Your Dream Car?</h3>
             <p className="text-muted-foreground mb-6">
               Contact us today to schedule your personal viewing appointment.
             </p>

@@ -7,7 +7,12 @@ interface BrandShowcaseProps {
   brands: string[];
 }
 
+// Top brands only — keeps the section premium, not congested
+const TOP_BRANDS = ['Mercedes Benz', 'BMW', 'Audi', 'Lexus'];
+
 export function BrandShowcase({ brands }: BrandShowcaseProps) {
+  const display = TOP_BRANDS.filter((b) => brands.includes(b));
+
   return (
     <section className="py-16 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,18 +25,18 @@ export function BrandShowcase({ brands }: BrandShowcaseProps) {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-6">
-          {brands.map((brand, index) => {
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+          {display.map((brand, index) => {
             const imgKey = brand.toLowerCase().replace(/\s+/g, '-');
             const imgSrc = CATEGORY_IMAGES[brand] || `/images/${imgKey}.png`;
-            
+
             return (
               <div
                 key={brand}
-                className="group flex flex-col items-center justify-center p-4 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/30 hover:bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
+                className="group flex flex-col items-center justify-center p-6 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/30 hover:bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <div className="w-16 h-16 mb-3 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 flex items-center justify-center overflow-hidden border border-primary/20 group-hover:border-primary/40 transition-all">
+                <div className="w-20 h-20 mb-4 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 flex items-center justify-center overflow-hidden border border-primary/20 group-hover:border-primary/40 transition-all">
                   <img
                     src={imgSrc}
                     alt={brand}

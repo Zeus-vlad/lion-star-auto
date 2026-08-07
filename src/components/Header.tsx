@@ -34,10 +34,9 @@ export function Header() {
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2" aria-label="Lion Star Auto Home">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-orange-600 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-              </svg>
+            <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo.png" alt="Lion Star Auto" className="w-full h-full object-cover" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-orange-600 bg-clip-text text-transparent hidden sm:block">
               Lion Star Auto
@@ -51,6 +50,12 @@ export function Header() {
             </Link>
             <Link href="/#inventory" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
               Inventory
+            </Link>
+            <Link href="/electric" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+              Electric
+            </Link>
+            <Link href="/gas" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+              Gas
             </Link>
             <Link href="/#about" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
               About
@@ -94,7 +99,7 @@ export function Header() {
                       <p className="text-xs text-muted-foreground">{session.user?.email}</p>
                     </div>
                     <Link
-                      href="/history"
+                      href="/orders"
                       className="flex items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-accent"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
@@ -123,10 +128,10 @@ export function Header() {
               </div>
             ) : (
               <div className="flex items-center space-x-2">
-                <Link href="/login">
+                <Link href="/auth/login">
                   <Button variant="ghost" size="sm">Sign In</Button>
                 </Link>
-                <Link href="/signup">
+                <Link href="/auth/register">
                   <Button size="sm">Get Started</Button>
                 </Link>
               </div>
@@ -155,6 +160,12 @@ export function Header() {
               <Link href="/#inventory" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                 Inventory
               </Link>
+              <Link href="/electric" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+                Electric
+              </Link>
+              <Link href="/gas" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+                Gas
+              </Link>
               <Link href="/#about" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                 About
               </Link>
@@ -164,7 +175,7 @@ export function Header() {
               <div className="pt-4 border-t border-border flex flex-col space-y-2">
                 {session ? (
                   <>
-                    <Link href="/history" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/orders" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                       Purchase History
                     </Link>
                     {(session.user as any)?.isAdmin && (
@@ -181,10 +192,10 @@ export function Header() {
                   </>
                 ) : (
                   <>
-                    <Link href="/login" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/auth/login" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                       Sign In
                     </Link>
-                    <Link href="/signup" className="text-lg font-medium text-primary" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/auth/register" className="text-lg font-medium text-primary" onClick={() => setIsMenuOpen(false)}>
                       Get Started
                     </Link>
                   </>

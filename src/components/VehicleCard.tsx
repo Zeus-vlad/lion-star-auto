@@ -5,8 +5,9 @@ import { cn } from '@/lib/utils';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart, ShoppingCart, ArrowRight } from 'lucide-react';
+import { Heart, ShoppingCart, ArrowRight, Loader2, Check } from 'lucide-react';
 import SmartImage from '@/components/SmartImage';
+import { useState } from 'react';
 
 interface VehicleCardProps {
   id: number;
@@ -31,9 +32,33 @@ export function VehicleCard({
   fuelType,
   transmission,
 }: VehicleCardProps) {
+  const [adding, setAdding] = useState(false);
+  const [added, setAdded] = useState(false);
+
+  const addToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (adding) return;
+    setAdding(true);
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: id }),
+      });
+      if (res.ok) {
+        setAdded(true);
+        setTimeout(() => setAdded(false), 2000);
+      }
+    } catch {
+      // silent fail on network error
+    } finally {
+      setAdding(false);
+    }
+  };
+
   return (
     <Link href={`/products/${id}`} className="block group">
-      <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card  border-border/50 group-hover:border-primary/30">
+      <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card border-border/50 group-hover:border-primary/30">
         {/* Image */}
         <div className="relative aspect-[4/3] overflow-hidden bg-muted">
           <SmartImage
@@ -101,13 +126,33 @@ export function VehicleCard({
         </CardContent>
 
         {/* Footer */}
-        <CardFooter className="p-4 pt-0">
+        <CardFooter className="p-4 pt-0 gap-2">
           <Button
-            className="w-full gap-2 bg-primary hover:bg-primary/90"
+            className="flex-1 gap-2 bg-primary hover:bg-primary/90"
             type="button"
           >
             View Details
             <ArrowRight className="w-4 h-4" />
+          </Button>
+          <Button
+            className={cn(
+              'gap-2 px-3',
+              added
+                ? 'bg-green-600 hover:bg-green-600 text-white'
+                : 'bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground'
+            )}
+            type="button"
+            aria-label="Add to cart"
+            onClick={addToCart}
+            disabled={adding}
+          >
+            {adding ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : added ? (
+              <Check className="w-4 h-4" />
+            ) : (
+              <ShoppingCart className="w-4 h-4" />
+            )}
           </Button>
         </CardFooter>
       </Card>
