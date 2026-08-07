@@ -9,7 +9,7 @@ interface SmartImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
 }
 
 const SmartImage = forwardRef<HTMLImageElement, SmartImageProps>(
-  ({ src, fallback = '/placeholder-car.jpg', className, ...props }, ref) => {
+  ({ src, fallback = '/images/placeholder.jpg', className, ...props }, ref) => {
   const [imageSrc, setImageSrc] = useState(src);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);

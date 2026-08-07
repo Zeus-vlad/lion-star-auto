@@ -11,39 +11,22 @@ export function Hero() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       aria-labelledby="hero-title"
     >
-      {/* Background Image with Overlay */}
+      {/* Full-bleed background video (original template structure) */}
       <div className="absolute inset-0 z-0">
-        <img
-          src="/hero-bg.jpg"
-          alt=""
-          className="w-full h-full object-cover object-center"
-          aria-hidden="true"
-        />
-        {/* Dark gradient overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-      </div>
-
-      {/* Portrait Video Container (9/16 aspect ratio) */}
-      <div className="absolute top-0 right-0 w-[300px] h-[533px] sm:w-[350px] sm:h-[622px] lg:w-[400px] lg:h-[711px] z-10 hidden xl:block overflow-hidden rounded-l-3xl shadow-2xl shadow-black/50 border-l-4 border-primary">
         <video
           autoPlay
           muted
           loop
           playsInline
-          className="w-full h-full object-cover"
-          poster="/hero-poster.jpg"
+          className="w-full h-full object-cover object-center"
+          poster="/images/hero-poster.jpg"
           aria-label="Lion Star Auto showroom"
         >
-          <source src="/hero-video.mp4" type="video/mp4" />
-          <img src="/hero-poster.jpg" alt="Lion Star Auto luxury collection" className="w-full h-full object-cover" />
+          <source src="/images/tesla.mp4" type="video/mp4" />
         </video>
-        {/* Play button overlay */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-16 h-16 rounded-full bg-primary/20 backdrop-blur-sm border border-primary/30 flex items-center justify-center group cursor-pointer hover:bg-primary/30 transition-all">
-            <div className="w-6 h-6 border-t-2 border-r-2 border-white rounded-tl-[4px] transform translate-x-[1px]"></div>
-          </div>
-        </div>
+        {/* Dark gradient overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/80" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
       </div>
 
       {/* Floating decorative elements */}
@@ -55,7 +38,7 @@ export function Hero() {
       </div>
 
       {/* Shimmer overlay */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none opacity-30"
         style={{
           background: 'linear-gradient(120deg, transparent 0%, rgba(249, 115, 22, 0.1) 50%, transparent 100%)',

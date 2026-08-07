@@ -133,7 +133,7 @@ export default async function HomePage({
                         id={product.productId}
                         title={product.name}
                         price={parseFloat(product.price)}
-                        image={product.imgUrl || '/placeholder-car.jpg'}
+                        image={product.imgUrl || '/images/placeholder.jpg'}
                         category={product.category?.categoryName || ''}
                         year={new Date(product.createdAt).getFullYear()}
                       />

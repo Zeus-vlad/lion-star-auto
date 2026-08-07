@@ -26,7 +26,7 @@ export function Header() {
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         isScrolled
-          ? 'bg-white/95 dark:bg-gray-950/95 backdrop-blur-md shadow-sm border-b  border '
+          ? 'bg-white/95 dark:bg-gray-950/95 backdrop-blur-md shadow-sm border-b border-border'
           : 'bg-transparent'
       )}
     >
@@ -88,8 +88,8 @@ export function Header() {
                 </button>
 
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-popover border  rounded-lg shadow-lg py-2 animate-fade-in">
-                    <div className="px-4 py-2 border-b  border ">
+                  <div className="absolute right-0 mt-2 w-48 bg-popover border border-border rounded-lg shadow-lg py-2 animate-fade-in">
+                    <div className="px-4 py-2 border-b border-border">
                       <p className="text-sm font-medium">{(session.user as any)?.firstName} {(session.user as any)?.lastName}</p>
                       <p className="text-xs text-muted-foreground">{session.user?.email}</p>
                     </div>
@@ -147,7 +147,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div id="mobile-menu" className="lg:hidden py-4 border-t  border  animate-slide-up">
+          <div id="mobile-menu" className="lg:hidden py-4 border-t border-border animate-slide-up">
             <div className="flex flex-col space-y-4">
               <Link href="/" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                 Home
@@ -161,7 +161,7 @@ export function Header() {
               <Link href="/#contact" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
                 Contact
               </Link>
-              <div className="pt-4 border-t  border  flex flex-col space-y-2">
+              <div className="pt-4 border-t border-border flex flex-col space-y-2">
                 {session ? (
                   <>
                     <Link href="/history" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>

@@ -28,7 +28,7 @@ export function BrandShowcase({ brands }: BrandShowcaseProps) {
             return (
               <div
                 key={brand}
-                className="group flex flex-col items-center justify-center p-4 bg-card/50 backdrop-blur-sm rounded-xl border /50 hover:border-primary/30 hover:bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
+                className="group flex flex-col items-center justify-center p-4 bg-card/50 backdrop-blur-sm rounded-xl border border-border/50 hover:border-primary/30 hover:bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <div className="w-16 h-16 mb-3 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 flex items-center justify-center overflow-hidden border border-primary/20 group-hover:border-primary/40 transition-all">
