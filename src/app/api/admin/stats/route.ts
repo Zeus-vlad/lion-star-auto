@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { customers, products, transactions, purchases } from '@/db/schema';
 import { eq, count, desc, sql } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/admin-auth';
 
 export async function GET(request: NextRequest) {
+
+  const { error: authError } = await requireAdmin();
+  if (authError) return authError;
   try {
     const customerCount = await db.select({ count: count() }).from(customers);
     const productCount = await db.select({ count: count() }).from(products);

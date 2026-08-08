@@ -1,129 +1,143 @@
-import { Header } from '@/components/Header';
+'use client';
+
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, Plus, Edit, Trash2, Save, X } from 'lucide-react';
+import { Search, Plus, Edit, Trash2, Loader2, Package } from 'lucide-react';
 import Link from 'next/link';
+import { AdminBreadcrumbs } from '@/components/AdminBreadcrumbs';
 
-interface Product {
+interface AdminProduct {
   productId: number;
   name: string;
   price: string;
-  description: string;
-  quantityRemaining: number;
-  categoryId: number | null;
-  categoryName: string | null;
   imgUrl: string | null;
-  createdAt: Date;
+  quantityRemaining: number;
+  fuelType: string | null;
+  categoryName: string | null;
 }
 
-async function fetchProducts(): Promise<Product[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/products`, {
-    next: { revalidate: 0 },
-  });
-  if (!res.ok) return [];
-  return res.json() as Promise<Product[]>;
-}
+const imgSrc = (u: string | null) =>
+  u && u.startsWith('http') ? u : u ? `/images/${u}` : null;
 
-export const dynamic = 'force-dynamic';
+export default function AdminProductsPage() {
+  const [products, setProducts] = useState<AdminProduct[]>([]);
+  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState<number | null>(null);
 
-export default async function AdminProducts() {
-  let products: Product[] = [];
-  try {
-    products = await fetchProducts();
-  } catch (e) {
-    console.error('Fetch failed:', e);
+  useEffect(() => {
+    fetch('/api/admin/products')
+      .then((r) => r.json())
+      .then((d) => setProducts(d))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const filtered = products.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  async function removeProduct(id: number) {
+    if (!confirm('Delete this product permanently?')) return;
+    setDeleting(id);
+    const res = await fetch(`/api/admin/products?id=${id}`, { method: 'DELETE' });
+    if (res.ok) setProducts((ps) => ps.filter((p) => p.productId !== id));
+    setDeleting(null);
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Header />
+    <div>
+      <AdminBreadcrumbs crumbs={[{ label: 'Products' }]} />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Products Management</h1>
-          <Button asChild>
-            <Link href="/admin/products/new">Add New Product</Link>
-          </Button>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
+            <Package className="w-6 h-6 text-primary" />
+            Products Management
+          </h1>
+          <p className="text-sm text-white/50 mt-1">{products.length} vehicles in the lot</p>
         </div>
-
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Search products..." className="pl-10" />
-        </div>
-
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-4 font-medium">Product</th>
-                    <th className="text-left p-4 font-medium">Category</th>
-                    <th className="text-left p-4 font-medium">Price</th>
-                    <th className="text-left p-4 font-medium">Stock</th>
-                    <th className="text-center p-4 font-medium">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product) => (
-                    <tr key={product.productId} className="border-b">
-                      <td className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden">
-                            {product.imgUrl ? (
-                              <img
-                                src={`/images/${product.imgUrl}`}
-                                alt={product.name}
-                                className="w-full h-full object-cover object-center"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
-                                No Image
-                              </div>
-                            )}
-                          </div>
-                          <span className="font-medium">{product.name}</span>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <Badge variant="outline">{product.categoryName || 'Uncategorized'}</Badge>
-                      </td>
-                      <td className="p-4 text-primary font-semibold">
-                        ${parseFloat(product.price).toLocaleString()}
-                      </td>
-                      <td className="p-4">
-                        <Badge variant={product.quantityRemaining > 0 ? 'default' : 'secondary'}>
-                          {product.quantityRemaining > 0 ? `${product.quantityRemaining} in stock` : 'Sold Out'}
-                        </Badge>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link href={`/admin/products/${product.productId}`}>
-                              <Edit className="w-4 h-4" />
-                            </Link>
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-destructive">
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-
-        {products.length === 0 && (
-          <div className="text-center py-16 text-muted-foreground">
-            No products found. Click "Add New Product" to get started.
-          </div>
-        )}
+        <Button asChild className="shadow-glow gap-2">
+          <Link href="/admin/products/new">
+            <Plus className="w-4 h-4" /> Add New Product
+          </Link>
+        </Button>
       </div>
+
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+        <Input
+          placeholder="Search products..."
+          className="pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-16 text-white/50">
+          <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading products...
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {filtered.map((p) => (
+            <Card key={p.productId} className="card-lift bg-zinc-900/80 border-white/10 shadow-lux hover:border-primary/40 transition-all">
+              <CardContent className="p-0">
+                <div className="flex gap-4 p-4">
+                  <div className="w-24 h-20 rounded-xl overflow-hidden bg-zinc-800 flex-shrink-0 img-zoom">
+                    {imgSrc(p.imgUrl) ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={imgSrc(p.imgUrl)!} alt={p.name} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-[10px] text-white/30">No Image</div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-white text-sm leading-tight line-clamp-2">{p.name}</p>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      <Badge variant="outline" className="border-white/15 text-white/70">{p.categoryName || 'Uncategorized'}</Badge>
+                      {p.fuelType && (
+                        <Badge variant="outline" className="border-primary/30 text-primary/90">{p.fuelType}</Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-primary font-bold">${parseFloat(p.price).toLocaleString()}</span>
+                      <Badge className={p.quantityRemaining > 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}>
+                        {p.quantityRemaining > 0 ? `${p.quantityRemaining} in stock` : 'Sold Out'}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex border-t border-white/10">
+                  <Button variant="ghost" size="sm" className="flex-1 rounded-none text-white/70 hover:text-white hover:bg-white/5" asChild>
+                    <Link href={`/admin/products/${p.productId}`}>
+                      <Edit className="w-3.5 h-3.5 mr-1.5" /> Edit
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex-1 rounded-none text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                    onClick={() => removeProduct(p.productId)}
+                    disabled={deleting === p.productId}
+                  >
+                    {deleting === p.productId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5 mr-1.5" />}
+                    Delete
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+          {filtered.length === 0 && (
+            <div className="col-span-full text-center py-16 text-white/40">
+              No products match your search.
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

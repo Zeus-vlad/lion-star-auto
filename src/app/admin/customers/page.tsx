@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Search, Loader2 } from 'lucide-react';
+import { AdminBreadcrumbs } from '@/components/AdminBreadcrumbs';
 
 interface Customer {
   customerId: number;
@@ -52,10 +52,10 @@ export default function AdminCustomers() {
   });
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold mb-8">Customers Management</h1>
+    <div>
+      <AdminBreadcrumbs crumbs={[{ label: 'Customers' }]} />
+      <div>
+        <h1 className="text-2xl font-bold text-white mb-8">Customers Management</h1>
 
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />

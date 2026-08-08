@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { customers, states } from '@/db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/admin-auth';
 
 // GET /api/admin/customers - List customers with order counts
 export async function GET(request: NextRequest) {
+
+  const { error: authError } = await requireAdmin();
+  if (authError) return authError;
   try {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');

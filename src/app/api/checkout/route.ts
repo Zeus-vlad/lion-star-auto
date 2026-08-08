@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
         name: products.name,
         price: products.price,
         count: products.count,
+        config: products.config,
       })
       .from(products)
       .where(eq(products.inCart, true));
@@ -84,6 +85,7 @@ export async function POST(request: NextRequest) {
           quantity: qty,
           priceAtPurchase: unitPrice.toFixed(2),
           totalAmount: lineTotal.toFixed(2),
+          config: item.config ? JSON.stringify(item.config) : null,
         })
         .returning({ purchaseId: purchases.purchaseId });
 

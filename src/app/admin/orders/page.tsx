@@ -1,195 +1,159 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { Header } from '@/components/Header';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShoppingCart, Circle, CreditCard } from 'lucide-react';
+import { AdminBreadcrumbs } from '@/components/AdminBreadcrumbs';
 
 interface OrderItem {
   productName: string | null;
   quantity: number;
   priceAtPurchase: string;
   totalAmount: string;
+  config: any;
+  imgUrl: string | null;
 }
 
 interface Order {
   transactionId: number;
-  purchaseId: number | null;
   totalAmount: string;
-  taxAmount: string | null;
-  paymentMethod: string | null;
+  paymentMethod: string;
   paymentStatus: string;
-  shippingCity: string | null;
-  stateCode: string | null;
+  paymentPlan: any;
   dateOfTransaction: string;
-  customerName: string | null;
-  customerEmail: string | null;
+  customerName: string;
+  customerEmail: string;
   items: OrderItem[];
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  pending: 'bg-amber-500/15 text-amber-600',
-  completed: 'bg-emerald-500/15 text-emerald-600',
-  cancelled: 'bg-destructive/15 text-destructive',
+const imgSrc = (u: string | null) =>
+  u && u.startsWith('http') ? u : u ? `/images/${u}` : null;
+
+const statusStyles: Record<string, string> = {
+  completed: 'bg-emerald-500/20 text-emerald-300',
+  pending: 'bg-amber-500/20 text-amber-300',
+  failed: 'bg-red-500/20 text-red-300',
+  refunded: 'bg-zinc-500/20 text-zinc-300',
 };
 
-export default function AdminOrders() {
+function ConfigChips({ config }: { config: any }) {
+  if (!config) return null;
+  const wheel = config.wheel;
+  const color = config.color;
+  return (
+    <div className="flex flex-wrap gap-1.5 mt-1.5">
+      {wheel && (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-white/70">
+          <Circle className="w-2.5 h-2.5 text-primary" />
+          {wheel.name} {wheel.price > 0 && `+$${Number(wheel.price).toLocaleString()}`}
+        </span>
+      )}
+      {color && (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-white/70">
+          <Circle className="w-2.5 h-2.5 text-primary" />
+          {color.name} {color.price > 0 && `+$${Number(color.price).toLocaleString()}`}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function PlanBadge({ plan }: { plan: any }) {
+  if (!plan) return null;
+  return plan.type === 'installments' ? (
+    <Badge className="bg-blue-500/20 text-blue-300">
+      <CreditCard className="w-3 h-3 mr-1" />
+      20% down · {plan.termMonths}mo · ${Number(plan.monthlyPayment || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo
+    </Badge>
+  ) : (
+    <Badge className="bg-white/10 text-white/80">
+      <CreditCard className="w-3 h-3 mr-1" />
+      Paid in Full
+    </Badge>
+  );
+}
+
+export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [message, setMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
-
-  const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/admin/orders?status=${statusFilter}`);
-      if (res.ok) setOrders(await res.json());
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }, [statusFilter]);
 
   useEffect(() => {
-    load();
-  }, [load]);
-
-  async function updateStatus(transactionId: number, paymentStatus: string) {
-    setMessage(null);
-    try {
-      const res = await fetch('/api/admin/orders', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transactionId, paymentStatus }),
-      });
-      if (res.ok) {
-        setMessage({ type: 'success', text: `Order #${transactionId} updated.` });
-        await load();
-      } else {
-        setMessage({ type: 'error', text: 'Failed to update order.' });
-      }
-    } catch (e) {
-      setMessage({ type: 'error', text: 'Failed to update order.' });
-    }
-  }
+    fetch('/api/admin/orders?limit=100')
+      .then((r) => r.json())
+      .then((d) => setOrders(Array.isArray(d) ? d : []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          <h1 className="text-3xl font-bold">Orders Management</h1>
-          <div className="w-48">
-            <Select value={statusFilter} onChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All statuses</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+    <div>
+      <AdminBreadcrumbs crumbs={[{ label: 'Orders' }]} />
+      <div className="flex items-center gap-2.5 mb-6">
+        <ShoppingCart className="w-6 h-6 text-primary" />
+        <div>
+          <h1 className="text-2xl font-bold text-white">Orders</h1>
+          <p className="text-sm text-white/50">{orders.length} total orders</p>
         </div>
-
-        {message && (
-          <div
-            className={`mb-6 p-4 rounded-lg text-sm ${
-              message.type === 'error'
-                ? 'bg-destructive/10 text-destructive'
-                : 'bg-emerald-500/10 text-emerald-600'
-            }`}
-          >
-            {message.text}
-          </div>
-        )}
-
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-4 font-medium">Order</th>
-                    <th className="text-left p-4 font-medium">Customer</th>
-                    <th className="text-left p-4 font-medium">Items</th>
-                    <th className="text-right p-4 font-medium">Total</th>
-                    <th className="text-center p-4 font-medium">Status</th>
-                    <th className="text-center p-4 font-medium">Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order) => (
-                    <tr key={order.transactionId} className="border-b align-top">
-                      <td className="p-4 font-medium">#{order.transactionId}</td>
-                      <td className="p-4">
-                        <div className="font-medium">{order.customerName || 'Guest'}</div>
-                        <div className="text-sm text-muted-foreground">{order.customerEmail || '—'}</div>
-                      </td>
-                      <td className="p-4">
-                        {order.items.length === 0 ? (
-                          <span className="text-muted-foreground text-sm">—</span>
-                        ) : (
-                          <ul className="text-sm">
-                            {order.items.map((item, i) => (
-                              <li key={i}>
-                                {item.productName || 'Product'} × {item.quantity}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </td>
-                      <td className="p-4 text-right font-semibold text-primary">
-                        ${parseFloat(order.totalAmount).toLocaleString()}
-                      </td>
-                      <td className="p-4">
-                        <div className="flex items-center justify-center gap-2">
-                          <Badge className={STATUS_STYLES[order.paymentStatus] || ''}>
-                            {order.paymentStatus}
-                          </Badge>
-                          <Select
-                            value={order.paymentStatus}
-                            onChange={(v: string) => updateStatus(order.transactionId, v)}
-                          >
-                            <SelectTrigger className="w-28 h-8">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="pending">Pending</SelectItem>
-                              <SelectItem value="completed">Completed</SelectItem>
-                              <SelectItem value="cancelled">Cancelled</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </td>
-                      <td className="p-4 text-sm text-muted-foreground text-center whitespace-nowrap">
-                        {new Date(order.dateOfTransaction).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-
-        {!loading && orders.length === 0 && (
-          <div className="text-center py-16 text-muted-foreground">
-            No orders found{statusFilter !== 'all' ? ` with status "${statusFilter}"` : ''}.
-          </div>
-        )}
-        {loading && (
-          <div className="flex items-center justify-center py-16 text-muted-foreground">
-            <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading orders...
-          </div>
-        )}
       </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-16 text-white/50">
+          <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading orders...
+        </div>
+      ) : orders.length === 0 ? (
+        <div className="text-center py-16 text-white/40">No orders yet.</div>
+      ) : (
+        <div className="space-y-4">
+          {orders.map((o) => (
+            <Card key={o.transactionId} className="card-lift bg-zinc-900/80 border-white/10 shadow-lux hover:border-primary/40 transition-all">
+              <CardContent className="p-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-white">Order #{o.transactionId}</span>
+                      <Badge className={statusStyles[o.paymentStatus] || 'bg-white/10 text-white/80'}>
+                        {o.paymentStatus}
+                      </Badge>
+                      <PlanBadge plan={o.paymentPlan} />
+                    </div>
+                    <p className="text-sm text-white/50 mt-1">
+                      {o.customerName} · {o.customerEmail}
+                    </p>
+                  </div>
+                  <div className="text-left sm:text-right">
+                    <p className="text-lg font-bold text-primary">${parseFloat(o.totalAmount).toLocaleString()}</p>
+                    <p className="text-[11px] text-white/40">{new Date(o.dateOfTransaction).toLocaleDateString()}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {o.items?.map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/[0.03] border border-white/5">
+                      <div className="w-12 h-9 rounded-md overflow-hidden bg-zinc-800 flex-shrink-0">
+                        {imgSrc(item.imgUrl) ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={imgSrc(item.imgUrl)!} alt={item.productName || ''} className="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-[9px] text-white/30">IMG</div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-white/90 truncate">{item.productName}</p>
+                        <ConfigChips config={item.config} />
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-sm font-medium text-white">${parseFloat(item.totalAmount).toLocaleString()}</p>
+                        <p className="text-[11px] text-white/40">qty {item.quantity}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -4,6 +4,9 @@ import { products, categories, customers, purchases, transactions } from '@/db/s
 import { desc, count, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
+
+  const { error: authError } = await requireAdmin();
+  if (authError) return authError;
   try {
     // Get all products with category info
     const allProducts = await db
@@ -31,3 +34,80 @@ export async function GET(request: NextRequest) {
 
 // Import eq
 import { eq } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/admin-auth';
+
+// POST /api/admin/products — create a new product
+export async function POST(request: NextRequest) {
+  const { error: authError } = await requireAdmin();
+  if (authError) return authError;
+  try {
+    const body = await request.json();
+    const { name, price, description, quantityRemaining, categoryId, imgUrl, year, mileage, fuelType, transmission, engine } = body;
+    if (!name || !price) {
+      return NextResponse.json({ error: 'Name and price are required' }, { status: 400 });
+    }
+    const [created] = await db
+      .insert(products)
+      .values({
+        name,
+        price: String(price),
+        description: description || null,
+        quantityRemaining: parseInt(quantityRemaining) || 1,
+        categoryId: categoryId ? parseInt(categoryId) : null,
+        imgUrl: imgUrl || null,
+        year: year ? parseInt(year) : null,
+        mileage: mileage ? parseInt(mileage) : null,
+        fuelType: fuelType || null,
+        transmission: transmission || null,
+        engine: engine || null,
+      })
+      .returning({ productId: products.productId });
+    return NextResponse.json(created, { status: 201 });
+  } catch (error) {
+    console.error('Error creating product:', error);
+    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
+  }
+}
+
+// PATCH /api/admin/products — update a product
+export async function PATCH(request: NextRequest) {
+  const { error: authError } = await requireAdmin();
+  if (authError) return authError;
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = parseInt(searchParams.get('id') || '');
+    if (!id) return NextResponse.json({ error: 'id is required' }, { status: 400 });
+    const body = await request.json();
+    const allowed = ['name', 'price', 'description', 'quantityRemaining', 'categoryId', 'imgUrl', 'year', 'mileage', 'fuelType', 'transmission', 'engine', 'topSpeed', 'time60', 'drivetrain', 'colour', 'interior', 'wheel'];
+    const updates: Record<string, any> = {};
+    for (const key of allowed) {
+      if (body[key] !== undefined) updates[key] = key === 'price' ? String(body[key]) : body[key];
+    }
+    if (updates.categoryId !== undefined) updates.categoryId = parseInt(updates.categoryId) || null;
+    if (updates.year !== undefined) updates.year = parseInt(updates.year) || null;
+    if (updates.mileage !== undefined) updates.mileage = parseInt(updates.mileage) || null;
+    if (updates.quantityRemaining !== undefined) updates.quantityRemaining = parseInt(updates.quantityRemaining) || 0;
+    if (Object.keys(updates).length === 0) return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
+    const [updated] = await db.update(products).set(updates).where(eq(products.productId, id)).returning({ productId: products.productId });
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error('Error updating product:', error);
+    return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
+  }
+}
+
+// DELETE /api/admin/products?id=N — remove a product
+export async function DELETE(request: NextRequest) {
+  const { error: authError } = await requireAdmin();
+  if (authError) return authError;
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = parseInt(searchParams.get('id') || '');
+    if (!id) return NextResponse.json({ error: 'id is required' }, { status: 400 });
+    await db.delete(products).where(eq(products.productId, id));
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 });
+  }
+}

@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { AdminBreadcrumbs } from '@/components/AdminBreadcrumbs';
 import { Plus, Trash2, Loader2 } from 'lucide-react';
 
 interface Category {
@@ -85,10 +85,10 @@ export default function AdminCategories() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold mb-8">Categories Management</h1>
+    <div>
+      <AdminBreadcrumbs crumbs={[{ label: 'Categories' }]} />
+      <div>
+        <h1 className="text-2xl font-bold text-white mb-8">Categories Management</h1>
 
         {message && (
           <div

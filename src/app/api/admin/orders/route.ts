@@ -2,16 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { transactions, customers, states, purchases, products } from '@/db/schema';
 import { desc, eq, sql } from 'drizzle-orm';
+import { requireAdmin } from '@/lib/admin-auth';
 
 interface OrderItemRow {
   productName: string | null;
   quantity: number;
   priceAtPurchase: string;
   totalAmount: string;
+  config: unknown;
+  imgUrl: string | null;
 }
 
 // GET /api/admin/orders - List all orders (transactions) with customer + line items
 export async function GET(request: NextRequest) {
+
+  const { error: authError } = await requireAdmin();
+  if (authError) return authError;
   try {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -27,6 +33,7 @@ export async function GET(request: NextRequest) {
         taxAmount: transactions.taxAmount,
         paymentMethod: transactions.paymentMethod,
         paymentStatus: transactions.paymentStatus,
+        paymentPlan: transactions.paymentPlan,
         shippingCity: transactions.shippingCity,
         shippingStateId: transactions.shippingStateId,
         dateOfTransaction: transactions.dateOfTransaction,
@@ -52,6 +59,8 @@ export async function GET(request: NextRequest) {
             quantity: purchases.quantity,
             priceAtPurchase: purchases.priceAtPurchase,
             totalAmount: purchases.totalAmount,
+            config: purchases.config,
+            imgUrl: products.imgUrl,
           })
           .from(purchases)
           .leftJoin(products, eq(purchases.productId, products.productId))
@@ -69,6 +78,9 @@ export async function GET(request: NextRequest) {
 
 // PATCH /api/admin/orders - Update order status
 export async function PATCH(request: NextRequest) {
+
+  const { error: authError } = await requireAdmin();
+  if (authError) return authError;
   try {
     const body = await request.json();
     const { transactionId, paymentStatus } = body;

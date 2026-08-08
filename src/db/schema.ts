@@ -85,6 +85,7 @@ export const purchases = autoSchema.table('purchases', {
   quantity: integer('quantity').notNull().default(1),
   priceAtPurchase: decimal('price_at_purchase', { precision: 12, scale: 2 }).notNull(),
   totalAmount: decimal('total_amount', { precision: 12, scale: 2 }).notNull(),
+  config: jsonb('config'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
   index('purchases_product_id_idx').on(table.productId),
