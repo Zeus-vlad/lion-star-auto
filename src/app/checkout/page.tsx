@@ -2,13 +2,15 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ShoppingCart, MapPin, CreditCard, Loader2 } from 'lucide-react';
+import { ShoppingCart, MapPin, CreditCard, Loader2, Lock, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 interface State {
   id: number;
@@ -28,6 +30,7 @@ interface CartItem {
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [states, setStates] = useState<State[]>([]);
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,6 +115,44 @@ export default function CheckoutPage() {
         <Header />
         <div className="flex items-center justify-center py-24 text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading checkout...
+        </div>
+      </div>
+    );
+  }
+
+  // Auth gate — only signed-in customers can pay
+  if (status === 'unauthenticated') {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <Header />
+        <div className="max-w-md mx-auto px-4 sm:px-6 py-24">
+          <Card className="border-border/50 shadow-lux text-center">
+            <CardHeader>
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-8 h-8 text-primary" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Sign in to Checkout</CardTitle>
+              <p className="text-muted-foreground text-sm mt-2">
+                Secure checkout is reserved for registered customers. Create a free
+                account or sign in to complete your purchase.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Link href="/auth/login" className="block w-full">
+                <Button className="w-full gap-2 shadow-glow" size="lg">
+                  Sign In <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              <Link href="/auth/register" className="block w-full">
+                <Button variant="outline" className="w-full" size="lg">
+                  Create Account
+                </Button>
+              </Link>
+              <Link href="/cart" className="block text-sm text-muted-foreground hover:text-primary mt-2">
+                ← Back to cart
+              </Link>
+            </CardContent>
+          </Card>
         </div>
       </div>
     );

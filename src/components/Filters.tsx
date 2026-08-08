@@ -41,7 +41,7 @@ export function Filters({
   };
 
   return (
-    <div className="sticky top-24 z-40 bg-background/95 backdrop-blur-sm border-b px-4 py-4">
+    <div className="px-0 py-4 lg:sticky lg:top-24 lg:z-40 lg:bg-background/95 lg:backdrop-blur-sm lg:border-b lg:px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           {/* Search */}

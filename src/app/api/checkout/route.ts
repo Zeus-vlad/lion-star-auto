@@ -2,11 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { customers, products, purchases, transactions } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 // POST /api/checkout - Place an order from the current cart
+// Auth required: only signed-in customers can pay.
 // Body: { customer: {firstName, lastName, email, phone?, address, city, stateId, zipCode}, paymentMethod }
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Please sign in to complete your purchase.' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const cust = body.customer || {};
 
