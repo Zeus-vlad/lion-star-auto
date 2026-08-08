@@ -45,7 +45,7 @@ async function fetchProducts(params: Record<string, string>) {
     next: { revalidate: 60 },
   });
   if (!res.ok) throw new Error('Failed to fetch products');
-  return res.json() as Promise<{ products: Product[]; categories: string[]; pagination: Pagination }>;
+  return res.json() as Promise<{ products: Product[]; categories: string[]; bodyTypes: string[]; pagination: Pagination }>;
 }
 
 export const dynamic = 'force-dynamic';
@@ -62,8 +62,9 @@ export default async function HomePage({
   const minPrice = params.minPrice || '';
   const maxPrice = params.maxPrice || '';
   const sort = params.sort || 'newest';
+  const bodyType = params.bodyType || '';
 
-  let productsData: { products: Product[]; categories: string[]; pagination: Pagination };
+  let productsData: { products: Product[]; categories: string[]; bodyTypes: string[]; pagination: Pagination };
 
   try {
     productsData = await fetchProducts({
@@ -74,15 +75,16 @@ export default async function HomePage({
       minPrice: minPrice,
       maxPrice: maxPrice,
       sort: sort,
+      bodyType: bodyType,
     });
   } catch (error) {
     console.error('Failed to fetch products:', error);
-    productsData = { products: [], categories: [], pagination: { page: 1, limit: 6, total: 0, totalPages: 0 } };
+    productsData = { products: [], categories: [], bodyTypes: [], pagination: { page: 1, limit: 6, total: 0, totalPages: 0 } };
   }
 
-  const { products, categories: categoryList, pagination } = productsData;
+  const { products, categories: categoryList, bodyTypes, pagination } = productsData;
 
-  const hasActiveFilters = category || search || minPrice || maxPrice;
+  const hasActiveFilters = category || search || minPrice || maxPrice || bodyType;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -111,6 +113,8 @@ export default async function HomePage({
           <HomeFilters
             categories={categoryList}
             selectedCategory={category}
+            bodyTypes={bodyTypes}
+            selectedBodyType={bodyType}
             priceRange={[
               minPrice ? parseInt(minPrice) : 0,
               maxPrice ? parseInt(maxPrice) : 200000,

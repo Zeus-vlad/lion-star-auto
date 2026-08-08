@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
   if (authError) return authError;
   try {
     const body = await request.json();
-    const { name, price, description, quantityRemaining, categoryId, imgUrl, year, mileage, fuelType, transmission, engine } = body;
+    const { name, price, description, quantityRemaining, categoryId, imgUrl, year, mileage, fuelType, bodyType, transmission, engine } = body;
     if (!name || !price) {
       return NextResponse.json({ error: 'Name and price are required' }, { status: 400 });
     }
@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
         year: year ? parseInt(year) : null,
         mileage: mileage ? parseInt(mileage) : null,
         fuelType: fuelType || null,
+        bodyType: bodyType || null,
         transmission: transmission || null,
         engine: engine || null,
       })
@@ -78,7 +79,7 @@ export async function PATCH(request: NextRequest) {
     const id = parseInt(searchParams.get('id') || '');
     if (!id) return NextResponse.json({ error: 'id is required' }, { status: 400 });
     const body = await request.json();
-    const allowed = ['name', 'price', 'description', 'quantityRemaining', 'categoryId', 'imgUrl', 'year', 'mileage', 'fuelType', 'transmission', 'engine', 'topSpeed', 'time60', 'drivetrain', 'colour', 'interior', 'wheel'];
+    const allowed = ['name', 'price', 'description', 'quantityRemaining', 'categoryId', 'imgUrl', 'year', 'mileage', 'fuelType', 'bodyType', 'transmission', 'engine', 'topSpeed', 'time60', 'drivetrain', 'colour', 'interior', 'wheel'];
     const updates: Record<string, any> = {};
     for (const key of allowed) {
       if (body[key] !== undefined) updates[key] = key === 'price' ? String(body[key]) : body[key];

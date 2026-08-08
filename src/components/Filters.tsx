@@ -9,9 +9,12 @@ import { ChevronDown, X, Filter } from 'lucide-react';
 interface FilterProps {
   categories: string[];
   selectedCategory: string;
+  bodyTypes: string[];
+  selectedBodyType: string;
   priceRange: [number, number];
   searchQuery: string;
   onCategoryChange: (category: string) => void;
+  onBodyTypeChange: (bodyType: string) => void;
   onPriceRangeChange: (range: [number, number]) => void;
   onSearchChange: (query: string) => void;
   onClearFilters: () => void;
@@ -21,9 +24,12 @@ interface FilterProps {
 export function Filters({
   categories,
   selectedCategory,
+  bodyTypes,
+  selectedBodyType,
   priceRange,
   searchQuery,
   onCategoryChange,
+  onBodyTypeChange,
   onPriceRangeChange,
   onSearchChange,
   onClearFilters,
@@ -68,6 +74,22 @@ export function Filters({
               <option value="">All Brands</option>
               {categories.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          </div>
+
+          {/* Body Type Filter */}
+          <div className="relative flex-1 max-w-xs">
+            <select
+              value={selectedBodyType}
+              onChange={(e) => onBodyTypeChange(e.target.value)}
+              className="w-full appearance-none pl-4 pr-10 py-2 border border-input rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              aria-label="Filter by body type"
+            >
+              <option value="">All Types</option>
+              {bodyTypes.map((bt) => (
+                <option key={bt} value={bt}>{bt}</option>
               ))}
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />

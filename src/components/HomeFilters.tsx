@@ -6,6 +6,8 @@ import { Filters } from '@/components/Filters';
 interface HomeFiltersProps {
   categories: string[];
   selectedCategory: string;
+  bodyTypes: string[];
+  selectedBodyType: string;
   priceRange: [number, number];
   searchQuery: string;
   hasActiveFilters: boolean;
@@ -15,6 +17,8 @@ interface HomeFiltersProps {
 export function HomeFilters({
   categories,
   selectedCategory,
+  bodyTypes,
+  selectedBodyType,
   priceRange,
   searchQuery,
   hasActiveFilters,
@@ -38,9 +42,12 @@ export function HomeFilters({
     <Filters
       categories={categories}
       selectedCategory={selectedCategory}
+      bodyTypes={bodyTypes}
+      selectedBodyType={selectedBodyType}
       priceRange={priceRange}
       searchQuery={searchQuery}
       onCategoryChange={(cat) => navigate(buildUrl({ category: cat, page: '1' }))}
+      onBodyTypeChange={(bt) => navigate(buildUrl({ bodyType: bt, page: '1' }))}
       onPriceRangeChange={(range) =>
         navigate(
           buildUrl({
@@ -51,7 +58,7 @@ export function HomeFilters({
         )
       }
       onSearchChange={(q) => navigate(buildUrl({ search: q, page: '1' }))}
-      onClearFilters={() => navigate('/')}
+      onClearFilters={() => navigate('/?page=1')}
       hasActiveFilters={hasActiveFilters}
     />
   );

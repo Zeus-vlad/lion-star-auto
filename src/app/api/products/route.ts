@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
     const sort = searchParams.get('sort') || 'newest';
     const featured = searchParams.get('featured');
     const productId = searchParams.get('id');
+    const bodyType = searchParams.get('bodyType');
 
     const offset = (page - 1) * limit;
 
@@ -65,6 +66,10 @@ export async function GET(request: NextRequest) {
       conditions.push(lte(products.price, maxPrice));
     }
 
+    if (bodyType && bodyType !== 'All Types' && bodyType !== 'all') {
+      conditions.push(eq(products.bodyType, bodyType));
+    }
+
     if (featured === 'true') {
       conditions.push(eq(products.quantityRemaining, 0)); // Use Sold Out as featured filter for testing
     }
@@ -97,12 +102,20 @@ export async function GET(request: NextRequest) {
     // Fetch categories for filter
     const categoriesData = await db.select().from(categories).orderBy(asc(categories.categoryName));
 
+    // Fetch distinct body types for filter
+    const bodyTypesResult = await db
+      .select({ bodyType: products.bodyType })
+      .from(products)
+      .where(ne(products.bodyType, ''));
+    const bodyTypes = Array.from(new Set(bodyTypesResult.map(r => r.bodyType).filter(Boolean))).sort() as string[];
+
     // Count total
     const countResult = await db.select({ count: sql<number>`count(*)` }).from(products).where(whereClause);
 
     return NextResponse.json({
       products: productsData,
       categories: categoriesData.map(c => c.categoryName),
+      bodyTypes,
       pagination: {
         page,
         limit,

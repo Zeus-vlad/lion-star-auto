@@ -26,6 +26,7 @@ interface Product {
   year: number | null;
   mileage: number | null;
   fuelType: string | null;
+  bodyType: string | null;
   transmission: string | null;
   engine: string | null;
   gearbox: string | null;
@@ -66,6 +67,7 @@ export default async function ProductPage({
   if (product.gearbox) specs.push({ icon: Cog, label: 'Gearbox', value: product.gearbox });
   if (product.drivetrain) specs.push({ icon: Car, label: 'Drivetrain', value: product.drivetrain });
   if (product.fuelType) specs.push({ icon: Fuel, label: 'Fuel', value: product.fuelType });
+  if (product.bodyType) specs.push({ icon: Car, label: 'Type', value: product.bodyType });
   if (product.mileage) specs.push({ icon: Gauge, label: 'Mileage', value: `${product.mileage.toLocaleString()} mi` });
   if (product.colour) specs.push({ icon: Palette, label: 'Colour', value: product.colour });
   if (product.interior) specs.push({ icon: CircleDot, label: 'Interior', value: product.interior });

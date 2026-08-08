@@ -56,6 +56,7 @@ export const products = autoSchema.table('products', {
   year: integer('year'),
   mileage: integer('mileage'),
   fuelType: varchar('fuel_type', { length: 50 }),
+  bodyType: varchar('body_type', { length: 50 }),
   transmission: varchar('transmission', { length: 50 }),
   engine: varchar('engine', { length: 100 }),
   gearbox: varchar('gearbox', { length: 50 }),

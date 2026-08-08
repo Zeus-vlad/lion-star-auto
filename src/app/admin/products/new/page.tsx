@@ -25,6 +25,7 @@ const emptyForm = {
   year: '',
   mileage: '',
   fuelType: 'Gasoline',
+  bodyType: 'Sedan',
   transmission: 'Automatic',
   engine: '',
 };
@@ -128,6 +129,18 @@ export default function NewProductPage() {
               <div>
                 <Label htmlFor="mileage" className="text-white/80">Mileage</Label>
                 <Input id="mileage" type="number" placeholder="5000" value={form.mileage} onChange={(e) => set('mileage', e.target.value)} className={fieldCls} />
+              </div>
+              <div>
+                <Label htmlFor="bodyType" className="text-white/80">Body Type</Label>
+                <select id="bodyType" value={form.bodyType || 'Sedan'} onChange={(e) => set('bodyType', e.target.value)} className={`${fieldCls} w-full px-3 py-2 rounded-md border bg-zinc-900`}>
+                  <option>Sedan</option>
+                  <option>SUV</option>
+                  <option>Coupe</option>
+                  <option>Truck</option>
+                  <option>Sports</option>
+                  <option>Convertible</option>
+                  <option>Wagon</option>
+                </select>
               </div>
               <div>
                 <Label htmlFor="transmission" className="text-white/80">Transmission</Label>

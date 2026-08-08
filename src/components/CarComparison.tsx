@@ -12,6 +12,7 @@ interface CompareCar {
   imgUrl: string | null;
   year: number | null;
   fuelType: string | null;
+  bodyType: string | null;
   transmission: string | null;
   engine: string | null;
   drivetrain: string | null;
@@ -64,6 +65,7 @@ export function CarComparison() {
   const specRows: { label: string; icon: React.ElementType; get: (c: CompareCar) => string }[] = [
     { label: 'Price', icon: Scale, get: (c) => `$${parseFloat(c.price).toLocaleString()}` },
     { label: 'Fuel', icon: Fuel, get: (c) => c.fuelType || '—' },
+    { label: 'Type', icon: Car, get: (c) => c.bodyType || '—' },
     { label: 'Engine', icon: Cog, get: (c) => c.engine || '—' },
     { label: 'Drivetrain', icon: Car, get: (c) => c.drivetrain || '—' },
     { label: '0-60 mph', icon: Zap, get: (c) => (c.time60 ? `${c.time60}s` : '—') },
