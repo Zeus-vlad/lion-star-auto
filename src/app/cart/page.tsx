@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trash2, Plus, Minus, ShoppingCart, Truck, Shield, Loader2 } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingCart, Truck, Shield, Loader2, Circle } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
@@ -159,6 +159,24 @@ function CartContent() {
                       <Link href={`/products/${item.productId}`} className="font-semibold hover:text-primary transition-colors line-clamp-1">
                         {item.name}
                       </Link>
+                      {(item as any).config && (
+                        <div className="flex flex-wrap gap-1.5 mt-1.5">
+                          {(item as any).config.wheel && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
+                              <Circle className="w-2.5 h-2.5 text-primary" />
+                              {((item as any).config.wheel.name || '').replace(' Alloy', '')} wheels
+                              {((item as any).config.wheel.price || 0) > 0 && ` +$${(item as any).config.wheel.price.toLocaleString()}`}
+                            </span>
+                          )}
+                          {(item as any).config.color && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-[10px] font-medium text-muted-foreground">
+                              <Circle className="w-2.5 h-2.5 text-primary" />
+                              {((item as any).config.color.name || '')}
+                              {((item as any).config.color.price || 0) > 0 && ` +$${(item as any).config.color.price.toLocaleString()}`}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       <p className="text-primary font-bold text-lg mt-1">
                         ${parseFloat(item.price).toLocaleString()}
                       </p>

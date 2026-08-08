@@ -96,6 +96,7 @@ export async function POST(request: NextRequest) {
           taxAmount: body.taxAmount ? parseFloat(body.taxAmount).toFixed(2) : '0.00',
           paymentMethod: body.paymentMethod || 'card',
           paymentStatus: 'completed',
+          paymentPlan: body.paymentPlan ? JSON.stringify(body.paymentPlan) : null,
           shippingAddress: cust.address || null,
           shippingCity: cust.city || null,
           shippingStateId: cust.stateId ? parseInt(cust.stateId) : null,

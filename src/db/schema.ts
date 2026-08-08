@@ -1,5 +1,6 @@
 import { pgSchema, serial, varchar, text, integer, decimal, boolean, timestamp, index, unique } from 'drizzle-orm/pg-core';
-import { sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
+import { jsonb } from 'drizzle-orm/pg-core';
 
 // Schema prefix for Neon - using lion_star_auto schema
 const SCHEMA = 'lion_star_auto';
@@ -65,6 +66,7 @@ export const products = autoSchema.table('products', {
   topSpeed: integer('top_speed'),
   time60: decimal('time_60', { precision: 3, scale: 1 }),
   featured: boolean('featured').default(false),
+  config: jsonb('config'),
   inCart: boolean('in_cart').default(false).notNull(),
   count: integer('count').default(0).notNull(),
   total: decimal('total', { precision: 12, scale: 2 }).default(sql`'0.00'`),
@@ -97,7 +99,8 @@ export const transactions = autoSchema.table('transactions', {
   taxAmount: decimal('tax_amount', { precision: 12, scale: 2 }).default('0.00'),
   stateTax: decimal('state_tax', { precision: 5, scale: 4 }).default('0.0000'),
   paymentMethod: varchar('payment_method', { length: 50 }),
-  paymentStatus: varchar('payment_status', { length: 50 }).default('pending').notNull(),
+  paymentStatus: varchar('payment_status', { length: 50 }).default('pending'),
+  paymentPlan: jsonb('payment_plan'),
   shippingAddress: text('shipping_address'),
   shippingCity: varchar('shipping_city', { length: 100 }),
   shippingStateId: integer('shipping_state_id').references(() => states.id, { onDelete: 'set null' }),

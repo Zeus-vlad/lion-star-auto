@@ -45,13 +45,18 @@ const COLORS: ColorOption[] = [
 export function CarConfigurator({
   basePrice,
   carName,
+  productId,
+  mainImage,
 }: {
   basePrice: number;
   carName: string;
+  productId: number;
+  mainImage?: string | null;
 }) {
   const [wheel, setWheel] = useState<WheelOption>(WHEELS[0]);
   const [color, setColor] = useState<ColorOption>(COLORS[0]);
   const [configured, setConfigured] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const addons = wheel.price + color.price;
   const total = basePrice + addons;
@@ -62,13 +67,76 @@ export function CarConfigurator({
     setConfigured(false);
   };
 
-  const saveConfig = () => {
-    setConfigured(true);
-    setTimeout(() => setConfigured(false), 2500);
+  // Map selected color to a FLUX-generated variant image when available.
+  // Popular models have pre-generated color variants in the bucket.
+  const colorVariantImage = (() => {
+    if (!mainImage) return null;
+    const baseKey = mainImage.split('/cars/').pop()?.split('.')[0] || '';
+    const colorSlug = color.id === 'std' ? '' : color.id;
+    // variant naming: {carKey}-{colorId}.jpg
+    if (!colorSlug) return mainImage;
+    return `https://br-royal-dust-ay28petz.storage.c-5.us-east-2.aws.neon.tech/lstar-images/colors/${baseKey}-${colorSlug}.jpg`;
+  })();
+
+  const displayImage = color.id === 'std' ? (mainImage || '') : (colorVariantImage || mainImage || '');
+
+  const saveConfig = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId,
+          config: {
+            wheel: { name: wheel.name, price: wheel.price, id: wheel.id },
+            color: { name: color.name, price: color.price, id: color.id },
+          },
+        }),
+      });
+      if (res.ok) {
+        setConfigured(true);
+        setTimeout(() => setConfigured(false), 2500);
+      }
+    } catch {
+      // silent fail on network error
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div className="space-y-6">
+      {/* Color-on-car visualization */}
+      {displayImage && (
+        <div className="rounded-2xl overflow-hidden border border-border/50 bg-muted/30">
+          <div className="relative aspect-[16/9] img-zoom">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={displayImage}
+              alt={`${carName} in ${color.name}`}
+              className="w-full h-full object-cover transition-all duration-500"
+              loading="lazy"
+              onError={(e) => {
+                // Fall back to main image if a color variant is missing
+                if (displayImage !== mainImage) {
+                  (e.currentTarget as HTMLImageElement).src = mainImage || '';
+                }
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+            <span className="absolute bottom-3 left-3 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-medium border border-white/10">
+              {color.name} · {wheel.name}
+            </span>
+          </div>
+          <p className="text-[11px] text-muted-foreground px-4 py-2">
+            {color.price > 0
+              ? `Visualized in ${color.name} (+$${color.price.toLocaleString()}). Final finish confirmed with your concierge before production.`
+              : `Shown in ${color.name}. Final finish confirmed with your concierge before delivery.`}
+          </p>
+        </div>
+      )}
+
       {/* Wheels */}
       <div>
         <h3 className="font-semibold mb-3 flex items-center gap-2">

@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ShoppingCart, MapPin, CreditCard, Loader2, Lock, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface State {
   id: number;
@@ -37,6 +38,8 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stateName, setStateName] = useState('');
+  const [plan, setPlan] = useState<'full' | 'installments'>('full');
+  const [termMonths, setTermMonths] = useState(60);
   const [form, setForm] = useState({
     firstName: '',
     lastName: '',
@@ -67,6 +70,19 @@ export default function CheckoutPage() {
   const tax = subtotal * taxRate;
   const total = subtotal + tax;
 
+  // Payment plan math
+  const downPaymentPct = 20;
+  const downPayment = plan === 'installments' ? (total * downPaymentPct) / 100 : 0;
+  const financed = total - downPayment;
+  const planApr = 5.9;
+  const monthly = plan === 'installments'
+    ? (() => {
+        const r = planApr / 100 / 12;
+        return (financed * r) / (1 - Math.pow(1 + r, -termMonths));
+      })()
+    : 0;
+  const dueToday = plan === 'installments' ? downPayment : total;
+
   function set(field: string, value: string) {
     setForm((f) => ({ ...f, [field]: value }));
   }
@@ -94,6 +110,13 @@ export default function CheckoutPage() {
           },
           paymentMethod: 'card',
           taxAmount: tax.toFixed(2),
+          paymentPlan: {
+            type: plan,
+            downPayment: plan === 'installments' ? Number(downPayment.toFixed(2)) : 0,
+            dueToday: Number(dueToday.toFixed(2)),
+            termMonths: plan === 'installments' ? termMonths : null,
+            monthlyPayment: plan === 'installments' ? Number(monthly.toFixed(2)) : null,
+          },
         }),
       });
       const data = await res.json();
@@ -342,6 +365,85 @@ export default function CheckoutPage() {
                       <span>Total</span>
                       <span className="text-primary">${total.toLocaleString()}</span>
                     </div>
+                  </div>
+
+                  {/* Payment plan selector */}
+                  <div className="rounded-xl border border-border/50 p-4 space-y-3">
+                    <p className="text-sm font-semibold">Payment Plan</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPlan('full')}
+                        className={cn(
+                          'px-3 py-2.5 rounded-lg border text-sm font-medium transition-all',
+                          plan === 'full'
+                            ? 'border-primary bg-primary/10 text-primary shadow-glow'
+                            : 'border-border/50 hover:border-primary/40'
+                        )}
+                      >
+                        Pay in Full
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPlan('installments')}
+                        className={cn(
+                          'px-3 py-2.5 rounded-lg border text-sm font-medium transition-all',
+                          plan === 'installments'
+                            ? 'border-primary bg-primary/10 text-primary shadow-glow'
+                            : 'border-border/50 hover:border-primary/40'
+                        )}
+                      >
+                        Installments
+                      </button>
+                    </div>
+
+                    {plan === 'installments' && (
+                      <div className="space-y-3 animate-fade-in">
+                        <div>
+                          <p className="text-xs text-muted-foreground mb-1.5">Loan term</p>
+                          <div className="grid grid-cols-4 gap-2">
+                            {[36, 48, 60, 72].map((m) => (
+                              <button
+                                key={m}
+                                type="button"
+                                onClick={() => setTermMonths(m)}
+                                className={cn(
+                                  'px-2 py-1.5 rounded-lg border text-xs font-medium transition-all',
+                                  termMonths === m
+                                    ? 'border-primary bg-primary/10 text-primary'
+                                    : 'border-border/50 hover:border-primary/40'
+                                )}
+                              >
+                                {m} mo
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="space-y-1.5 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Down payment (20%)</span>
+                            <span className="font-medium">${downPayment.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Due today before shipping</span>
+                            <span className="font-semibold text-primary">${dueToday.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Monthly × {termMonths}</span>
+                            <span className="font-medium">${monthly.toLocaleString(undefined, { maximumFractionDigits: 0 })}/mo</span>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground pt-1">
+                            {termMonths} months · {planApr}% APR · first payment after delivery
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {plan === 'full' && (
+                      <p className="text-[11px] text-muted-foreground">
+                        One-time payment of ${total.toLocaleString()} due today. Vehicle ships after confirmation.
+                      </p>
+                    )}
                   </div>
                   {error && (
                     <div className="p-3 rounded-lg text-sm bg-destructive/10 text-destructive">

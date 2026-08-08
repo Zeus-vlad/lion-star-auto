@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Reveal } from '@/components/Reveal';
 import { CarConfigurator } from '@/components/CarConfigurator';
+import { FinancingCalculator } from '@/components/FinancingCalculator';
+import { CarGallery } from '@/components/CarGallery';
 
 interface Product {
   productId: number;
@@ -77,6 +79,14 @@ export default async function ProductPage({
       : `/images/${product.imgUrl}`
     : '/images/placeholder.jpg';
 
+  // Multi-view gallery: main image + side/rear views (only when they exist on the CDN)
+  const CDN = 'https://br-royal-dust-ay28petz.storage.c-5.us-east-2.aws.neon.tech/lstar-images';
+  const baseKey = imageSrc.split('/cars/').pop()?.split('.')[0] || '';
+  const galleryImages = [
+    imageSrc,
+    ...(baseKey ? [`${CDN}/views/${baseKey}-side.jpg`, `${CDN}/views/${baseKey}-rear.jpg`] : []),
+  ];
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
@@ -93,24 +103,12 @@ export default async function ProductPage({
           {/* Left: Gallery */}
           <Reveal delay={1}>
             <div className="space-y-4">
-              <div className="relative aspect-[16/10] bg-muted rounded-2xl overflow-hidden img-zoom shadow-lux">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={imageSrc}
-                  alt={product.name}
-                  className="w-full h-full object-cover"
-                />
-                {/* gradient scrim */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
-                {product.category && (
-                  <Badge className="absolute top-4 left-4 px-3 py-1.5 bg-white/90 text-gray-900 backdrop-blur-sm border-0 shadow-sm">
-                    {product.category.categoryName}
-                  </Badge>
-                )}
-                <div className="absolute bottom-4 right-4 px-4 py-2 rounded-full bg-gradient-to-r from-primary to-orange-600 text-white font-bold shadow-glow">
-                  ${parsedPrice.toLocaleString()}
-                </div>
-              </div>
+              <CarGallery
+                images={galleryImages}
+                alt={product.name}
+                badge={product.category?.categoryName || null}
+                price={parsedPrice}
+              />
 
               {/* Quick highlights strip */}
               <div className="grid grid-cols-3 gap-3">
@@ -178,7 +176,21 @@ export default async function ProductPage({
             <Reveal delay={4}>
               <Card className="border-border/50 shadow-lux">
                 <CardContent className="p-5 sm:p-6">
-                  <CarConfigurator basePrice={parsedPrice} carName={product.name} />
+                  <CarConfigurator
+                    basePrice={parsedPrice}
+                    carName={product.name}
+                    productId={product.productId}
+                    mainImage={imageSrc}
+                  />
+                </CardContent>
+              </Card>
+            </Reveal>
+
+            {/* Financing calculator */}
+            <Reveal delay={4}>
+              <Card className="border-border/50 shadow-lux">
+                <CardContent className="p-5 sm:p-6">
+                  <FinancingCalculator price={parsedPrice} />
                 </CardContent>
               </Card>
             </Reveal>

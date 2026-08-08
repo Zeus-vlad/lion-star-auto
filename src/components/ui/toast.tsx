@@ -74,7 +74,7 @@ const ToastViewport = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:top-4 sm:bottom-auto sm:right-0 sm:ml-auto sm:flex-col sm:max-w-[390px]',
+      'fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 pointer-events-none sm:top-4 sm:bottom-auto sm:right-0 sm:ml-auto sm:flex-col sm:max-w-[390px]',
       className
     )}
     {...props}
@@ -89,7 +89,7 @@ const ToastProvider = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:top-4 sm:max-w-[390px] sm:bottom-auto',
+      'fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 pointer-events-none sm:top-4 sm:max-w-[390px] sm:bottom-auto',
       className
     )}
     {...props}

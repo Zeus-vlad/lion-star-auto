@@ -14,6 +14,7 @@ export async function GET() {
         imgUrl: products.imgUrl,
         count: products.count,
         total: products.total,
+        config: products.config,
         quantityRemaining: products.quantityRemaining,
       })
       .from(products)
@@ -26,7 +27,7 @@ export async function GET() {
   }
 }
 
-// POST /api/cart { productId } - Add one unit to the cart
+// POST /api/cart { productId, config? } - Add one unit to the cart
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -34,6 +35,8 @@ export async function POST(request: NextRequest) {
     if (!productId) {
       return NextResponse.json({ error: 'productId is required' }, { status: 400 });
     }
+    // Optional configuration: { wheel: {name, price}, color: {name, price} }
+    const config = body.config && typeof body.config === 'object' ? body.config : null;
 
     const [product] = await db
       .select({
@@ -52,12 +55,14 @@ export async function POST(request: NextRequest) {
     }
 
     const newCount = (product.count ?? 0) + 1;
+    const addons = config ? (config.wheel?.price ?? 0) + (config.color?.price ?? 0) : 0;
     const [updated] = await db
       .update(products)
       .set({
         inCart: true,
         count: newCount,
-        total: sql`cast(${product.price} as numeric) * ${newCount}`,
+        config: config ? JSON.stringify(config) : null,
+        total: sql`cast(${product.price} as numeric) * ${newCount} + ${addons}`,
         updatedAt: new Date(),
       })
       .where(eq(products.productId, productId))
