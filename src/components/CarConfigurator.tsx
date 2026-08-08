@@ -69,16 +69,23 @@ export function CarConfigurator({
 
   // Map selected color to a FLUX-generated variant image when available.
   // Popular models have pre-generated color variants in the bucket.
+  // Generated filenames use descriptive slugs, e.g. 2-deep-sapphire-blue.jpg
+  const VARIANT_SLUGS: Record<string, string> = {
+    std: 'onyx-black',
+    pearl: 'pearl-white',
+    silver: 'liquid-silver',
+    sapphire: 'deep-sapphire-blue',
+    ruby: 'crimson-red',
+  };
   const colorVariantImage = (() => {
     if (!mainImage) return null;
     const baseKey = mainImage.split('/cars/').pop()?.split('.')[0] || '';
-    const colorSlug = color.id === 'std' ? '' : color.id;
-    // variant naming: {carKey}-{colorId}.jpg
-    if (!colorSlug) return mainImage;
-    return `https://br-royal-dust-ay28petz.storage.c-5.us-east-2.aws.neon.tech/lstar-images/colors/${baseKey}-${colorSlug}.jpg`;
+    const slug = VARIANT_SLUGS[color.id];
+    if (!slug) return null;
+    return `https://br-royal-dust-ay28petz.storage.c-5.us-east-2.aws.neon.tech/lstar-images/colors/${baseKey}-${slug}.jpg`;
   })();
 
-  const displayImage = color.id === 'std' ? (mainImage || '') : (colorVariantImage || mainImage || '');
+  const displayImage = colorVariantImage || mainImage || '';
 
   const saveConfig = async () => {
     setSaving(true);
