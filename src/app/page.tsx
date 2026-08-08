@@ -117,7 +117,7 @@ export default async function HomePage({
             selectedBodyType={bodyType}
             priceRange={[
               minPrice ? parseInt(minPrice) : 0,
-              maxPrice ? parseInt(maxPrice) : 200000,
+              maxPrice ? parseInt(maxPrice) : 5000000,
             ]}
             searchQuery={search || ''}
             hasActiveFilters={!!hasActiveFilters}

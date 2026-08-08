@@ -4,22 +4,19 @@ import { NextResponse } from 'next/server';
 
 /**
  * Shared admin authorization guard for admin API routes.
- * Returns the session if the user is an authenticated admin,
- * or a 401 response if not.
+ * Returns a 401/403 NextResponse when unauthorized, or null when allowed.
  */
-export async function requireAdmin() {
+export async function requireAdmin(): Promise<NextResponse | null> {
   const session = await getServerSession(authOptions);
+
   if (!session?.user) {
-    return {
-      session: null,
-      error: NextResponse.json({ error: 'Authentication required' }, { status: 401 }),
-    };
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
   }
-  if (!(session.user as any).isAdmin) {
-    return {
-      session,
-      error: NextResponse.json({ error: 'Admin privileges required' }, { status: 403 }),
-    };
+
+  const isAdmin = (session.user as { isAdmin?: boolean })?.isAdmin;
+  if (!isAdmin) {
+    return NextResponse.json({ error: 'Administrator privileges required' }, { status: 403 });
   }
-  return { session, error: null };
+
+  return null;
 }

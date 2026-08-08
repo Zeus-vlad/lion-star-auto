@@ -6,7 +6,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 
 export async function GET(request: NextRequest) {
 
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     const customerCount = await db.select({ count: count() }).from(customers);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -38,10 +38,16 @@ export function Filters({
   const [isPriceOpen, setIsPriceOpen] = useState(false);
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+  const MAX_PRICE = 5000000;
 
-  const handlePriceApply = () => {
+  useEffect(() => {
+    if (!maxPrice) setMaxPrice(String(MAX_PRICE));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleApply = () => {
     const min = minPrice ? parseInt(minPrice) : 0;
-    const max = maxPrice ? parseInt(maxPrice) : 200000;
+    const max = maxPrice ? parseInt(maxPrice) : MAX_PRICE;
     onPriceRangeChange([min, max]);
     setIsPriceOpen(false);
   };
@@ -125,14 +131,16 @@ export function Filters({
                   <input
                     type="number"
                     placeholder="Max"
+                    max={MAX_PRICE}
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
                     className="flex-1 min-w-0 px-3 py-2 border border-input rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     aria-label="Maximum price"
                   />
                 </div>
+                <p className="text-[10px] text-muted-foreground mb-2">Range: $0 – ${MAX_PRICE.toLocaleString()} (includes hypercars)</p>
                 <div className="flex gap-2">
-                  <Button size="sm" className="flex-1" onClick={handlePriceApply}>
+                  <Button size="sm" className="flex-1" onClick={handleApply}>
                     Apply
                   </Button>
                   <Button size="sm" variant="outline" className="flex-1" onClick={() => setIsPriceOpen(false)}>

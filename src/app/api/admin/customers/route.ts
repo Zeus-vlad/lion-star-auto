@@ -7,7 +7,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 // GET /api/admin/customers - List customers with order counts
 export async function GET(request: NextRequest) {
 
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     const { searchParams } = new URL(request.url);

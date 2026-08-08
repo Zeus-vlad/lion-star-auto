@@ -7,7 +7,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 // GET /api/admin/categories - List all categories with product counts
 export async function GET() {
 
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     const allCategories = await db
@@ -33,7 +33,7 @@ export async function GET() {
 // POST /api/admin/categories - Create a category
 export async function POST(request: NextRequest) {
 
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     const body = await request.json();
@@ -82,7 +82,7 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/admin/categories?id=X - Delete a category
 export async function DELETE(request: NextRequest) {
 
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     const id = parseInt(request.nextUrl.searchParams.get('id') || '0');

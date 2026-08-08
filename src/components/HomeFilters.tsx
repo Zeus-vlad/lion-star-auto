@@ -52,7 +52,7 @@ export function HomeFilters({
         navigate(
           buildUrl({
             minPrice: range[0] > 0 ? String(range[0]) : '',
-            maxPrice: range[1] < 200000 ? String(range[1]) : '',
+            maxPrice: range[1] < 5000000 ? String(range[1]) : '',
             page: '1',
           })
         )

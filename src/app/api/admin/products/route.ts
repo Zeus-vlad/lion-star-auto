@@ -5,7 +5,7 @@ import { desc, count, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
 
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     // Get all products with category info
@@ -38,7 +38,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 
 // POST /api/admin/products — create a new product
 export async function POST(request: NextRequest) {
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     const body = await request.json();
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
 // PATCH /api/admin/products — update a product
 export async function PATCH(request: NextRequest) {
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     const { searchParams } = new URL(request.url);
@@ -99,7 +99,7 @@ export async function PATCH(request: NextRequest) {
 
 // DELETE /api/admin/products?id=N — remove a product
 export async function DELETE(request: NextRequest) {
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     const { searchParams } = new URL(request.url);

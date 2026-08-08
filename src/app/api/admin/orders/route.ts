@@ -16,7 +16,7 @@ interface OrderItemRow {
 // GET /api/admin/orders - List all orders (transactions) with customer + line items
 export async function GET(request: NextRequest) {
 
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     const { searchParams } = new URL(request.url);
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 // PATCH /api/admin/orders - Update order status
 export async function PATCH(request: NextRequest) {
 
-  const { error: authError } = await requireAdmin();
+  const authError = await requireAdmin();
   if (authError) return authError;
   try {
     const body = await request.json();

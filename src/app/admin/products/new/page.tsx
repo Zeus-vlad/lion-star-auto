@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, ArrowLeft, Save } from 'lucide-react';
 import Link from 'next/link';
 import { AdminBreadcrumbs } from '@/components/AdminBreadcrumbs';
+import { ImageUpload } from '@/components/ImageUpload';
 
 interface Category {
   categoryId: number;
@@ -152,8 +153,8 @@ export default function NewProductPage() {
               <Input id="engine" placeholder="3.0L Twin-Turbo V6" value={form.engine} onChange={(e) => set('engine', e.target.value)} className={fieldCls} />
             </div>
             <div>
-              <Label htmlFor="imgUrl" className="text-white/80">Image URL (CDN)</Label>
-              <Input id="imgUrl" placeholder="https://…/lstar-images/cars/new-car.jpg" value={form.imgUrl} onChange={(e) => set('imgUrl', e.target.value)} className={fieldCls} />
+              <Label htmlFor="imgUrl" className="text-white/80">Vehicle Image</Label>
+              <ImageUpload value={form.imgUrl} onChange={(url) => set('imgUrl', url)} folder="cars" className="mt-1.5" />
               <p className="text-[11px] text-white/40 mt-1">Paste a Neon Storage CDN URL, or leave empty to use a placeholder.</p>
             </div>
             <div>
