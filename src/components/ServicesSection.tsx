@@ -1,4 +1,5 @@
 import { Car, Shield, Truck, BadgeDollarSign, Wrench, FileCheck } from 'lucide-react';
+import { Reveal } from '@/components/Reveal';
 
 const services = [
   {
@@ -48,9 +49,9 @@ export function ServicesSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((s, i) => (
+            <Reveal key={s.title} delay={(i % 3) as 0 | 1 | 2} className="h-full">
             <div
-              key={s.title}
-              className="group p-6 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
+              className="group p-6 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 h-full"
             >
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-orange-500/20 flex items-center justify-center mb-4 group-hover:from-primary group-hover:to-orange-600 transition-all duration-300">
                 <s.icon className="w-6 h-6 text-primary group-hover:text-white transition-colors" />
@@ -58,6 +59,7 @@ export function ServicesSection() {
               <h3 className="font-semibold text-lg mb-2">{s.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
             </div>
+            </Reveal>
           ))}
         </div>
       </div>

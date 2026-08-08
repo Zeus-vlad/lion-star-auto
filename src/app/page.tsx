@@ -5,6 +5,7 @@ import { VehicleCard } from '@/components/VehicleCard';
 import { BrandShowcase } from '@/components/BrandShowcase';
 import { ServicesSection } from '@/components/ServicesSection';
 import { TeamSection } from '@/components/TeamSection';
+import { Reveal } from '@/components/Reveal';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Suspense } from 'react';
@@ -101,7 +102,6 @@ export default async function HomePage({
               Carefully curated selection of the world's most prestigious luxury vehicles.
             </p>
           </div>
-
           {/* Filters */}
           <HomeFilters
             categories={categoryList}
@@ -126,10 +126,10 @@ export default async function HomePage({
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {products.map((product, index) => (
-                    <div
+                    <Reveal
                       key={product.productId}
-                      className="animate-fade-in"
-                      style={{ animationDelay: `${index * 50}ms` }}
+                      delay={(index % 3) as 0 | 1 | 2}
+                      className="h-full"
                     >
                       <VehicleCard
                         id={product.productId}
@@ -139,7 +139,7 @@ export default async function HomePage({
                         category={product.category?.categoryName || ''}
                         year={new Date(product.createdAt).getFullYear()}
                       />
-                    </div>
+                    </Reveal>
                   ))}
                 </div>
 

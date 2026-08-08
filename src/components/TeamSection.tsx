@@ -1,3 +1,5 @@
+import { Reveal } from '@/components/Reveal';
+
 const BASE = 'https://br-royal-dust-ay28petz.storage.c-5.us-east-2.aws.neon.tech/lstar-images';
 
 const team = [
@@ -22,9 +24,9 @@ export function TeamSection() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {team.map((m, i) => (
+            <Reveal key={m.name} delay={(i % 4) as 0 | 1 | 2 | 3} className="h-full">
             <div
-              key={m.name}
-              className="group text-center p-6 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
+              className="group text-center p-6 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 h-full"
             >
               <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-primary/30 group-hover:border-primary transition-colors">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -37,6 +39,7 @@ export function TeamSection() {
               <h3 className="font-semibold text-lg">{m.name}</h3>
               <p className="text-sm text-primary font-medium">{m.role}</p>
             </div>
+            </Reveal>
           ))}
         </div>
       </div>

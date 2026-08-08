@@ -26,8 +26,8 @@ export function Header() {
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         isScrolled
-          ? 'bg-white/95 dark:bg-gray-950/95 backdrop-blur-md shadow-sm border-b border-border'
-          : 'bg-transparent'
+          ? 'glass-dark shadow-lux border-b border-border/50'
+          : 'bg-gradient-to-b from-black/60 via-black/30 to-transparent'
       )}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
@@ -45,22 +45,22 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-8">
-            <Link href="/" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+            <Link href="/" className="text-sm font-medium text-white/85 hover:text-primary transition-colors">
               Home
             </Link>
-            <Link href="/#inventory" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+            <Link href="/#inventory" className="text-sm font-medium text-white/85 hover:text-primary transition-colors">
               Inventory
             </Link>
-            <Link href="/electric" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+            <Link href="/electric" className="text-sm font-medium text-white/85 hover:text-primary transition-colors">
               Electric
             </Link>
-            <Link href="/gas" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+            <Link href="/gas" className="text-sm font-medium text-white/85 hover:text-primary transition-colors">
               Gas
             </Link>
-            <Link href="/#about" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+            <Link href="/#about" className="text-sm font-medium text-white/85 hover:text-primary transition-colors">
               About
             </Link>
-            <Link href="/#contact" className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors">
+            <Link href="/#contact" className="text-sm font-medium text-white/85 hover:text-primary transition-colors">
               Contact
             </Link>
           </div>
@@ -68,7 +68,7 @@ export function Header() {
           {/* Right Side Actions */}
           <div className="flex items-center space-x-4">
             {/* Cart */}
-            <Link href="/cart" className="relative p-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-accent">
+            <Link href="/cart" className="relative p-2 text-white/85 hover:text-primary transition-colors rounded-lg hover:bg-accent">
               <ShoppingCart className="w-5 h-5" />
               <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs font-medium rounded-full flex items-center justify-center">
                 0
@@ -81,7 +81,7 @@ export function Header() {
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-2 p-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-accent"
+                  className="flex items-center space-x-2 p-2 text-white/85 hover:text-primary transition-colors rounded-lg hover:bg-accent"
                   aria-expanded={isUserMenuOpen}
                   aria-haspopup="true"
                 >
@@ -100,7 +100,7 @@ export function Header() {
                     </div>
                     <Link
                       href="/orders"
-                      className="flex items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-accent"
+                      className="flex items-center space-x-2 px-4 py-2 text-sm text-white hover:bg-white/10"
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       <User className="w-4 h-4" />
@@ -109,7 +109,7 @@ export function Header() {
                     {(session.user as any)?.isAdmin && (
                       <Link
                         href="/admin"
-                        className="flex items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-accent"
+                        className="flex items-center space-x-2 px-4 py-2 text-sm text-white hover:bg-white/10"
                         onClick={() => setIsUserMenuOpen(false)}
                       >
                         <LayoutDashboard className="w-4 h-4" />
@@ -139,7 +139,7 @@ export function Header() {
 
             {/* Mobile Menu Button */}
             <button
-              className="lg:hidden p-2 text-foreground/80 hover:text-primary transition-colors rounded-lg hover:bg-accent"
+              className="lg:hidden p-2 text-white/85 hover:text-primary transition-colors rounded-lg hover:bg-accent"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
@@ -154,32 +154,32 @@ export function Header() {
         {isMenuOpen && (
           <div id="mobile-menu" className="lg:hidden py-4 border-t border-border animate-slide-up">
             <div className="flex flex-col space-y-4">
-              <Link href="/" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/" className="text-lg font-medium text-white hover:text-white" onClick={() => setIsMenuOpen(false)}>
                 Home
               </Link>
-              <Link href="/#inventory" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/#inventory" className="text-lg font-medium text-white hover:text-white" onClick={() => setIsMenuOpen(false)}>
                 Inventory
               </Link>
-              <Link href="/electric" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/electric" className="text-lg font-medium text-white hover:text-white" onClick={() => setIsMenuOpen(false)}>
                 Electric
               </Link>
-              <Link href="/gas" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/gas" className="text-lg font-medium text-white hover:text-white" onClick={() => setIsMenuOpen(false)}>
                 Gas
               </Link>
-              <Link href="/#about" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/#about" className="text-lg font-medium text-white hover:text-white" onClick={() => setIsMenuOpen(false)}>
                 About
               </Link>
-              <Link href="/#contact" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+              <Link href="/#contact" className="text-lg font-medium text-white hover:text-white" onClick={() => setIsMenuOpen(false)}>
                 Contact
               </Link>
               <div className="pt-4 border-t border-border flex flex-col space-y-2">
                 {session ? (
                   <>
-                    <Link href="/orders" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/orders" className="text-lg font-medium text-white hover:text-white" onClick={() => setIsMenuOpen(false)}>
                       Purchase History
                     </Link>
                     {(session.user as any)?.isAdmin && (
-                      <Link href="/admin" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+                      <Link href="/admin" className="text-lg font-medium text-white hover:text-white" onClick={() => setIsMenuOpen(false)}>
                         Admin Dashboard
                       </Link>
                     )}
@@ -192,7 +192,7 @@ export function Header() {
                   </>
                 ) : (
                   <>
-                    <Link href="/auth/login" className="text-lg font-medium text-foreground hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/auth/login" className="text-lg font-medium text-white hover:text-white" onClick={() => setIsMenuOpen(false)}>
                       Sign In
                     </Link>
                     <Link href="/auth/register" className="text-lg font-medium text-primary" onClick={() => setIsMenuOpen(false)}>
