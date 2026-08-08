@@ -30,15 +30,19 @@ export function HomeFilters({
     return `/?${sp.toString()}`;
   };
 
+  const navigate = (url: string) => {
+    router.push(url, { scroll: false });
+  };
+
   return (
     <Filters
       categories={categories}
       selectedCategory={selectedCategory}
       priceRange={priceRange}
       searchQuery={searchQuery}
-      onCategoryChange={(cat) => router.push(buildUrl({ category: cat, page: '1' }))}
+      onCategoryChange={(cat) => navigate(buildUrl({ category: cat, page: '1' }))}
       onPriceRangeChange={(range) =>
-        router.push(
+        navigate(
           buildUrl({
             minPrice: range[0] > 0 ? String(range[0]) : '',
             maxPrice: range[1] < 200000 ? String(range[1]) : '',
@@ -46,8 +50,8 @@ export function HomeFilters({
           })
         )
       }
-      onSearchChange={(q) => router.push(buildUrl({ search: q, page: '1' }))}
-      onClearFilters={() => router.push('/')}
+      onSearchChange={(q) => navigate(buildUrl({ search: q, page: '1' }))}
+      onClearFilters={() => navigate('/')}
       hasActiveFilters={hasActiveFilters}
     />
   );

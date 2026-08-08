@@ -37,7 +37,20 @@ export async function GET(request: NextRequest) {
     const conditions: any[] = [];
 
     if (category && category !== 'All Brands' && category !== 'all') {
-      conditions.push(eq(products.categoryId, parseInt(category)));
+      // Support both category ID and name (UI sends brand names like "Mercedes Benz")
+      const catId = parseInt(category);
+      if (!isNaN(catId)) {
+        conditions.push(eq(products.categoryId, catId));
+      } else {
+        const [cat] = await db
+          .select({ categoryId: categories.categoryId })
+          .from(categories)
+          .where(eq(categories.categoryName, category))
+          .limit(1);
+        if (cat) {
+          conditions.push(eq(products.categoryId, cat.categoryId));
+        }
+      }
     }
 
     if (search) {

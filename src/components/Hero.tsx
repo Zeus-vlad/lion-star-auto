@@ -97,8 +97,8 @@ export function Hero() {
             </Button>
           </div>
 
-          {/* Scroll indicator */}
-          <div className="mt-16 animate-fade-in animation-delay-300">
+          {/* Scroll indicator — centered */}
+          <div className="mt-16 flex justify-center w-full animate-fade-in animation-delay-300">
             <button
               className="flex flex-col items-center space-y-2 text-white/60 hover:text-white transition-colors"
               aria-label="Scroll down to explore"

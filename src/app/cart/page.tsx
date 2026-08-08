@@ -145,51 +145,51 @@ function CartContent() {
           <div>
             <div className="space-y-4 mb-8">
               {items.map((item) => (
-                <Card key={item.productId} className="p-4">
+                <Card key={item.productId} className="card-lift p-4 border-border/50 shadow-lux">
                   <CardContent className="flex items-center gap-4 p-0">
-                    <div className="w-24 h-24 bg-muted rounded-lg overflow-hidden flex-shrink-0">
-                      {item.imgUrl ? (
-                        <img
-                          src={`/images/${item.imgUrl}`}
-                          alt={item.name}
-                          className="w-full h-full object-cover object-center"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
-                          No Image
-                        </div>
-                      )}
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 bg-muted rounded-xl overflow-hidden flex-shrink-0 img-zoom">
+                      <img
+                        src={item.imgUrl && item.imgUrl.startsWith('http') ? item.imgUrl : item.imgUrl ? `/images/${item.imgUrl}` : '/images/placeholder.jpg'}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
                     </div>
-                    <div className="flex-1">
-                      <Link href={`/products/${item.productId}`} className="font-semibold hover:underline">
+                    <div className="flex-1 min-w-0">
+                      <Link href={`/products/${item.productId}`} className="font-semibold hover:text-primary transition-colors line-clamp-1">
                         {item.name}
                       </Link>
-                      <p className="text-primary font-semibold">
+                      <p className="text-primary font-bold text-lg mt-1">
                         ${parseFloat(item.price).toLocaleString()}
                       </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => changeQty(item.productId, 'dec')}
-                      >
-                        <Minus className="w-4 h-4" />
-                      </Button>
-                      <span className="w-8 text-center">{item.count ?? 1}</span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => changeQty(item.productId, 'inc')}
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
+                      <div className="flex items-center gap-2 mt-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-8 h-8 p-0"
+                          onClick={() => changeQty(item.productId, 'dec')}
+                          aria-label="Decrease quantity"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </Button>
+                        <span className="w-8 text-center font-medium">{item.count ?? 1}</span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-8 h-8 p-0"
+                          onClick={() => changeQty(item.productId, 'inc')}
+                          aria-label="Increase quantity"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </div>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-destructive"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={() => removeItem(item.productId)}
+                      aria-label={`Remove ${item.name}`}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

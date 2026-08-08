@@ -6,9 +6,11 @@ import { BrandShowcase } from '@/components/BrandShowcase';
 import { ServicesSection } from '@/components/ServicesSection';
 import { TeamSection } from '@/components/TeamSection';
 import { Reveal } from '@/components/Reveal';
+import { InventoryScrollAnchor } from '@/components/InventoryScrollAnchor';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Suspense } from 'react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CATEGORY_NAMES } from '@/db/seed-data';
 
@@ -84,10 +86,12 @@ export default async function HomePage({
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
-      
-      {/* Hero Section */}
+      <Suspense fallback={null}>
+        <InventoryScrollAnchor />
+      </Suspense>
       <Hero />
-      
+
+      {/* Hero Section */}
       {/* Brand Showcase */}
       <BrandShowcase brands={CATEGORY_NAMES} />
 
@@ -152,10 +156,10 @@ export default async function HomePage({
                         size="sm"
                         asChild
                       >
-                        <a href={`/?page=${pagination.page - 1}${category ? `&category=${category}` : ''}${search ? `&search=${search}` : ''}${minPrice ? `&minPrice=${minPrice}` : ''}${maxPrice ? `&maxPrice=${maxPrice}` : ''}`}>
+                        <Link href={`/?page=${pagination.page - 1}${category ? `&category=${category}` : ''}${search ? `&search=${search}` : ''}${minPrice ? `&minPrice=${minPrice}` : ''}${maxPrice ? `&maxPrice=${maxPrice}` : ''}`} scroll={false}>
                           <ChevronLeft className="w-4 h-4 mr-1" />
                           Previous
-                        </a>
+                        </Link>
                       </Button>
                     )}
 
@@ -169,10 +173,10 @@ export default async function HomePage({
                         size="sm"
                         asChild
                       >
-                        <a href={`/?page=${pagination.page + 1}${category ? `&category=${category}` : ''}${search ? `&search=${search}` : ''}${minPrice ? `&minPrice=${minPrice}` : ''}${maxPrice ? `&maxPrice=${maxPrice}` : ''}`}>
+                        <Link href={`/?page=${pagination.page + 1}${category ? `&category=${category}` : ''}${search ? `&search=${search}` : ''}${minPrice ? `&minPrice=${minPrice}` : ''}${maxPrice ? `&maxPrice=${maxPrice}` : ''}`} scroll={false}>
                           Next
                           <ChevronRight className="w-4 h-4 ml-1" />
-                        </a>
+                        </Link>
                       </Button>
                     )}
                   </div>
