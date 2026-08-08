@@ -1,11 +1,59 @@
+'use client';
+
+import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Lock, Mail, ArrowRight } from 'lucide-react';
+import { User, Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', password: '' });
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const set = (field: string, value: string) => setForm((f) => ({ ...f, [field]: value }));
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      // Create customer via a register endpoint
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setError(d.error || 'Registration failed. Please try again.');
+        setLoading(false);
+        return;
+      }
+      // Auto sign-in after registration
+      const signInRes = await signIn('credentials', {
+        email: form.email,
+        password: form.password,
+        redirect: false,
+      });
+      if (signInRes?.ok) {
+        router.push('/');
+        router.refresh();
+      } else {
+        router.push('/auth/login');
+      }
+    } catch {
+      setError('Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Full-bleed background image */}
@@ -41,34 +89,39 @@ export default function RegisterPage() {
             <CardTitle className="text-xl font-bold text-white">Get Started</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="firstName" className="text-white/80">First Name</Label>
-                  <Input id="firstName" placeholder="John" required className="mt-1.5 bg-white/5 border-white/15 text-white placeholder:text-white/40 focus:bg-white/10" />
+                  <Input id="firstName" placeholder="John" required value={form.firstName} onChange={(e) => set('firstName', e.target.value)} className="mt-1.5 bg-white/5 border-white/15 text-white placeholder:text-white/40 focus:bg-white/10" />
                 </div>
                 <div>
                   <Label htmlFor="lastName" className="text-white/80">Last Name</Label>
-                  <Input id="lastName" placeholder="Doe" required className="mt-1.5 bg-white/5 border-white/15 text-white placeholder:text-white/40 focus:bg-white/10" />
+                  <Input id="lastName" placeholder="Doe" required value={form.lastName} onChange={(e) => set('lastName', e.target.value)} className="mt-1.5 bg-white/5 border-white/15 text-white placeholder:text-white/40 focus:bg-white/10" />
                 </div>
               </div>
               <div>
                 <Label htmlFor="email" className="text-white/80">Email</Label>
                 <div className="relative mt-1.5">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                  <Input id="email" type="email" placeholder="you@example.com" required className="pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40 focus:bg-white/10" />
+                  <Input id="email" type="email" placeholder="you@example.com" required value={form.email} onChange={(e) => set('email', e.target.value)} className="pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40 focus:bg-white/10" />
                 </div>
               </div>
               <div>
                 <Label htmlFor="password" className="text-white/80">Password</Label>
                 <div className="relative mt-1.5">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-                  <Input id="password" type="password" placeholder="Create a password" required className="pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40 focus:bg-white/10" />
+                  <Input id="password" type="password" placeholder="Create a password" required minLength={6} value={form.password} onChange={(e) => set('password', e.target.value)} className="pl-10 bg-white/5 border-white/15 text-white placeholder:text-white/40 focus:bg-white/10" />
                 </div>
               </div>
-              <Button className="w-full gap-2 shadow-glow" type="submit">
-                Create Account
-                <ArrowRight className="w-4 h-4" />
+              {error && (
+                <div className="p-3 rounded-lg text-sm bg-red-500/15 text-red-300 border border-red-500/20">
+                  {error}
+                </div>
+              )}
+              <Button className="w-full gap-2 shadow-glow" type="submit" disabled={loading}>
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
+                {loading ? 'Creating account...' : 'Create Account'}
               </Button>
             </form>
 
