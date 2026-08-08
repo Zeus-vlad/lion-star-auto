@@ -89,27 +89,27 @@ export function Filters({
             </button>
 
             {isPriceOpen && (
-              <div className="absolute top-full left-0 right-0 mt-2 p-4 bg-popover border  rounded-lg shadow-lg z-50 animate-fade-in">
-                <div className="flex items-center space-x-2 mb-3">
+              <div className="absolute top-full left-0 right-0 mt-2 p-4 bg-popover border border-border rounded-xl shadow-lux-lg z-50 animate-fade-in min-w-[260px]">
+                <div className="flex items-center gap-2 mb-3">
                   <input
                     type="number"
                     placeholder="Min"
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-input rounded bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="flex-1 min-w-0 px-3 py-2 border border-input rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     aria-label="Minimum price"
                   />
-                  <span className="text-muted-foreground">-</span>
+                  <span className="text-muted-foreground shrink-0">-</span>
                   <input
                     type="number"
                     placeholder="Max"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-input rounded bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="flex-1 min-w-0 px-3 py-2 border border-input rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                     aria-label="Maximum price"
                   />
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex gap-2">
                   <Button size="sm" className="flex-1" onClick={handlePriceApply}>
                     Apply
                   </Button>

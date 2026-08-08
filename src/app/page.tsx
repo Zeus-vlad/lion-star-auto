@@ -6,6 +6,7 @@ import { BrandShowcase } from '@/components/BrandShowcase';
 import { ServicesSection } from '@/components/ServicesSection';
 import { TeamSection } from '@/components/TeamSection';
 import { Reveal } from '@/components/Reveal';
+import { CarComparison } from '@/components/CarComparison';
 import { InventoryScrollAnchor } from '@/components/InventoryScrollAnchor';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -67,7 +68,7 @@ export default async function HomePage({
   try {
     productsData = await fetchProducts({
       page: page.toString(),
-      limit: '12',
+      limit: '6',
       category: category,
       search: search,
       minPrice: minPrice,
@@ -76,7 +77,7 @@ export default async function HomePage({
     });
   } catch (error) {
     console.error('Failed to fetch products:', error);
-    productsData = { products: [], categories: [], pagination: { page: 1, limit: 12, total: 0, totalPages: 0 } };
+    productsData = { products: [], categories: [], pagination: { page: 1, limit: 6, total: 0, totalPages: 0 } };
   }
 
   const { products, categories: categoryList, pagination } = productsData;
@@ -186,6 +187,9 @@ export default async function HomePage({
           </div>
         </div>
       </section>
+
+      {/* Comparison Section */}
+      <CarComparison />
 
       {/* About Section */}
       <section id="about" className="py-20 bg-muted/30 relative overflow-hidden">

@@ -6,6 +6,7 @@ import { ShoppingCart, Heart, Share2, ChevronLeft, Gauge, Fuel, Cog, Calendar, Z
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Reveal } from '@/components/Reveal';
+import { CarConfigurator } from '@/components/CarConfigurator';
 
 interface Product {
   productId: number;
@@ -134,7 +135,9 @@ export default async function ProductPage({
           <div className="space-y-6">
             <Reveal delay={2}>
               <div>
-                <h1 className="text-3xl sm:text-4xl font-bold leading-tight">{year} {product.name}</h1>
+                <h1 className="text-3xl sm:text-4xl font-bold leading-tight">
+                  {product.name.startsWith(String(year)) ? product.name : `${year} ${product.name}`}
+                </h1>
                 <p className="mt-3 text-muted-foreground leading-relaxed">{product.description}</p>
                 <div className="flex items-center gap-2 mt-4">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -171,8 +174,17 @@ export default async function ProductPage({
               </Card>
             </Reveal>
 
-            {/* Actions */}
+            {/* Configurator — wheels + colours */}
             <Reveal delay={4}>
+              <Card className="border-border/50 shadow-lux">
+                <CardContent className="p-5 sm:p-6">
+                  <CarConfigurator basePrice={parsedPrice} carName={product.name} />
+                </CardContent>
+              </Card>
+            </Reveal>
+
+            {/* Actions */}
+            <Reveal delay={5}>
               <div className="flex flex-col sm:flex-row gap-3">
                 <Button size="lg" className="flex-1 gap-2 shadow-glow" asChild>
                   <Link href={`/cart?add=${product.productId}`}>
